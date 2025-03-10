@@ -13,16 +13,14 @@ class AddProductVariantToCart
         /** @var \App\Models\User|null $user */
         $user = $auth->user();
 
-        if ($auth->guest()) {
-            $cart = Cart::firstOrCreate([
-                'session_id' => session()->getId(),
-            ]);
-        }
-
-        if ($user) {
-            $cart = $user->cart ?: $user->cart()->create();
-        }
+        $cart = match($auth->guest()) {
+            true => Cart::firstOrCreate(['session_id' => session()->getId()]), 
+            false => $cart = $user->cart ?: $user->cart()->create(),
+        };
         
-        dd($cart);
+        $cart->items()->create([
+            'product_variant_id' => $variantId,
+            'quantity' => 1,
+        ]);
     }
 }
