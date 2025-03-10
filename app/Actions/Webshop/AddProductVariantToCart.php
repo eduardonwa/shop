@@ -20,7 +20,9 @@ class AddProductVariantToCart
         }
 
         if ($user) {
-            return $user->cart ?: $user->cart()->create();
+            $cart = $user->cart ?: $user->cart()->create();
         }
+        
+        dd($cart);
     }
 }
