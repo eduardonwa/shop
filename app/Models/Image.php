@@ -7,6 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Image extends Model
 {
-    /** @use HasFactory<\Database\Factories\ImageFactory> */
     use HasFactory;
 }
