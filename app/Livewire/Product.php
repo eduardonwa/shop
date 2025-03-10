@@ -38,6 +38,8 @@ class Product extends Component
         );
 
         $this->banner('Tu producto se añadió al carrito.');
+
+        $this->dispatch('productAddedToCart');
     }
 
     public function getProductProperty()
