@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
@@ -12,6 +13,15 @@ class CartItem extends Model
 {
     use HasFactory;
     
+    protected function subtotal(): Attribute
+    {
+        return Attribute::make(
+            get: function() {
+                return $this->product->price->multiply($this->quantity);
+            }
+        );
+    }
+
     // La relación hasOneThrough permite acceder a Product a través de ProductVariant.
     public function product(): HasOneThrough
     {
