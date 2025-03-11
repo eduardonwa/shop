@@ -11,9 +11,20 @@ class CreateStripeCheckoutSession
 {
     public function createFromCart(Cart $cart)
     {
-        return $cart->user->checkout(
+        return $cart->user
+        ->allowPromotionCodes()
+        ->checkout(
             $this->formatCartItems($cart->items), [
-                'automatic_tax' => ['enabled' => false] // desactivar Stripe Tax
+                'automatic_tax' => ['enabled' => false], // desactivar Stripe Tax
+                'customer_update' => [
+                    'shipping' => 'auto',
+                ],
+                // activar/desactivar esta opción si la tienda realiza envios
+                'shipping_address_collection' => [
+                    'allowed_countries' => [
+                        'US', 'MX'
+                    ]
+                ]
             ]
         );
     }
