@@ -3,14 +3,22 @@
 namespace App\Providers;
 
 use Money\Money;
+use App\Models\User;
 use NumberFormatter;
+use Illuminate\Http\Request;
+use Laravel\Cashier\Cashier;
+use Laravel\Fortify\Fortify;
+use App\Factories\CartFactory;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 use Money\Currencies\ISOCurrencies;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 use Money\Formatter\IntlMoneyFormatter;
+use App\Actions\Webshop\MigrateSessionCart;
+use Laravel\Fortify\Http\Requests\LoginRequest;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,7 +36,21 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Model::unguard();
+        Cashier::calculateTaxes();
         
+        Fortify::authenticateUsing(function (Request $request) {
+            /** @var LoginRequest $request */
+
+            $email = $request->input('email');
+            $password = $request->input('password');
+
+            $user = User::where('email', $email)->first();
+    
+            if ($user && Hash::check($password, $user->password)) {
+                (new MigrateSessionCart)->migrate(CartFactory::make(), $user->cart ?: $user->cart()->create([]));
+                return $user;
+            }
+        });
         // Establece el locale para la aplicación
         app()->setLocale('es_MX');
 
