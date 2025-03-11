@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Cart;
+use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Jetstream\HasProfilePhoto;
 use Illuminate\Notifications\Notifiable;
@@ -11,8 +12,12 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Billable;
-
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ */
 class User extends Authenticatable
 {
     use HasApiTokens;
@@ -20,6 +25,7 @@ class User extends Authenticatable
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use Billable;
 
     /**
      * The attributes that are mass assignable.

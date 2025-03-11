@@ -65,7 +65,7 @@
                 <p>Porfavor <a href="{{ route('register') }}" class="underline">regístrate</a> o <a href="{{ route('login') }}" class="underline">inicia sesión</a> para continuar</p>
             @endguest
             @auth
-                <x-button wire:click="addToCart"> Checkout </x-button>
+                <x-button wire:click="checkout"> Checkout </x-button>
             @endauth
         </div>
     </div>

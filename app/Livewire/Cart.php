@@ -2,8 +2,10 @@
 
 namespace App\Livewire;
 
+use App\Actions\Webshop\CreateStripeCheckoutSession;
 use Livewire\Component;
 use App\Factories\CartFactory;
+use Illuminate\Support\Facades\Auth;
 
 class Cart extends Component
 {
@@ -37,6 +39,11 @@ class Cart extends Component
         $this->cart->items()->where('id', $itemId)->delete();
 
         $this->dispatch('productRemovedFromCart');
+    }
+
+    public function checkout(CreateStripeCheckoutSession $checkoutSession)
+    {
+        return $checkoutSession->createFromCart($this->cart);
     }
     
     public function render()
