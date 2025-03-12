@@ -23,7 +23,7 @@ class StripeWebhookController extends Controller
             return response('Firma inválida', 403);
         }
 
-        event(new WebhookReceived($event->data['object']));
+        event(new WebhookReceived($event->data['object']->toArray()));
 
         return response('Webhook recibido', 200);
     }

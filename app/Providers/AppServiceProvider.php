@@ -72,10 +72,5 @@ class AppServiceProvider extends ServiceProvider
             
             return $moneyFormatter->format($money);
         });
-
-        Event::listen(
-            WebhookReceived::class,
-            StripeEventListener::class,  
-        );
     }
 }
