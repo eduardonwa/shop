@@ -1,18 +1,16 @@
 <?php
 
+use App\Mail\AbandonedCartReminder;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\StripeWebhookController;
-use App\Mail\OrderConfirmation;
-use App\Models\Order;
 
 Route::get('/', \App\Livewire\StoreFront::class)->name('home');
 Route::get('/product/{productId}', \App\Livewire\Product::class)->name('product');
 Route::get('/cart', \App\Livewire\Cart::class)->name('cart');
 
 Route::get('/preview', function() {
-    $order = Order::first();
+    $cart = \App\Models\User::first()->cart;
 
-    return new OrderConfirmation($order);
+    return new AbandonedCartReminder($cart);
 });
 //Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
 

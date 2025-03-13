@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Foundation\Application;
+use App\Console\Commands\AbandonedCart;
+use App\Console\Commands\RemoveInactiveSessionCarts;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
@@ -15,6 +18,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens([
             'stripe/webhook',
         ]);
+    })
+    ->withSchedule(function (Schedule $schedule) {
+        // mandar mensaje a la 1 para los que dejaron algo en su carrito
+        $schedule->command(AbandonedCart::class)->dailyAt('13:00');
+        // limpiar carritos vacios cada semana
+        $schedule->command(RemoveInactiveSessionCarts::class)->weekly();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
