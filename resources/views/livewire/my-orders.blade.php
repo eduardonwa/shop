@@ -3,7 +3,7 @@
         <thead>
             <tr>
                 <th class="text-left">Order</th>
-                <th class="text-left">Ordered at</th>
+                <th class="text-left">Ordered</th>
                 <th class="text-right">Total</th>
             </tr>
         </thead>

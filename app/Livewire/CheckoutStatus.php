@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\Attributes\Computed;
 
 class CheckoutStatus extends Component
 {
@@ -13,7 +14,8 @@ class CheckoutStatus extends Component
         $this->sessionId = request()->get('session_id');
     }
 
-    public function getOrderProperty()
+    #[Computed]
+    public function order()
     {
         return auth()->user()->orders()->where('stripe_checkout_session_id', $this->sessionId)->first();
     }

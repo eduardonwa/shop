@@ -3,11 +3,12 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\Attributes\Computed;
 
 class MyOrders extends Component
 {
-
-    public function getOrdersProperty()
+    #[Computed]
+    public function orders()
     {
         return auth()->user()->orders;
     }

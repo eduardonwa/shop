@@ -2,8 +2,9 @@
 
 namespace App\Livewire;
 
-use App\Factories\CartFactory;
 use Livewire\Component;
+use App\Factories\CartFactory;
+use Livewire\Attributes\Computed;
 
 class NavigationCart extends Component
 {
@@ -13,7 +14,8 @@ class NavigationCart extends Component
         'productRemovedFromCart' => '$refresh',
     ];
 
-    public function getCountProperty()
+    #[Computed]
+    public function count()
     {
         return CartFactory::make()->items()->sum('quantity');
     }
