@@ -1,5 +1,5 @@
 <div class="grid grid-cols-4 mt-12 gap-4">
-    <div class="bg-white rounded-lg shadow p-5 col-span-3">
+    <x-order-panel class="col-span-3">
         <table class="w-full">
             <thead>
                 <tr>
@@ -57,17 +57,17 @@
                 </tr>
             </tfoot>
         </table>
-    </div>
+    </x-order-panel>
 
     <div>
-        <div class="bg-white rounded-lg shadow p-5 col-span-1">
+        <x-order-panel class="col-span-1">
             @guest
                 <p>Porfavor <a href="{{ route('register') }}" class="underline">regístrate</a> o <a href="{{ route('login') }}" class="underline">inicia sesión</a> para continuar</p>
             @endguest
             @auth
-                <x-button wire:click="checkout"> Checkout </x-button>
+                <x-button class="w-full justify-center" wire:click="checkout">Checkout</x-button>
             @endauth
-        </div>
+        </x-order-panel>
     </div>
 
 </div>

@@ -16,7 +16,7 @@ class Order extends Model
 
     public $casts = [
         'billing_address' => 'collection',
-        'shipping_adress' => 'collection',
+        'shipping_address' => 'collection',
         'amount_shipping' => MoneyCast::class,
         'amount_discount' => MoneyCast::class,
         'amount_tax' => MoneyCast::class,
