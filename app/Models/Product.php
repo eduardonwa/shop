@@ -42,26 +42,4 @@ class Product extends Model
     {
         return $this->hasMany(Image::class);
     }
-
-    protected function formattedPrice(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                $money = new Money($this->price, new Currency('MXN'));
-                $currencies = new ISOCurrencies();
-                $numberFormatter = new NumberFormatter('es_MX', \NumberFormatter::CURRENCY);
-                $moneyFormatter = new IntlMoneyFormatter($numberFormatter, $currencies);
-                
-                return $moneyFormatter->format($money);
-            },
-            set: function ($value) {
-                // Convert the formatted string back to a Money object
-                $numberFormatter = new NumberFormatter('es_MX', \NumberFormatter::CURRENCY);
-                $parsedValue = $numberFormatter->parseCurrency($value, $currency);
-                
-                // Store the value as an integer in the smallest currency unit
-                return (int) $parsedValue;
-            }
-        );
-    }
 }

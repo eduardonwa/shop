@@ -66,7 +66,15 @@ class AppServiceProvider extends ServiceProvider
             $numberFormatter = new NumberFormatter('es_MX', \NumberFormatter::CURRENCY);
             $moneyFormatter = new IntlMoneyFormatter($numberFormatter, $currencies);
             
-            return $moneyFormatter->format($money);
+            // obtener el valor formateado
+            $formattedValue = $moneyFormatter->format($money);
+
+            // eliminar los dos ceros innecesarios si el valor es un número entero
+            if (fmod($money->getAmount() / 100, 1) == 0) {
+                $formattedValue = preg_replace('/\.00$/', '', $formattedValue);
+            }
+
+            return $formattedValue;
         });
     }
 }

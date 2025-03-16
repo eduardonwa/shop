@@ -2,28 +2,38 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
+use Money\Money;
 use Filament\Tables;
 use App\Models\Product;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Support\RawJs;
 use Filament\Resources\Resource;
-use Forms\Components\TextInput\Mask;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ImageColumn;
-use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ProductResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\ProductResource\RelationManagers;
-use Filament\Support\RawJs;
-use Money\Money;
 
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getModelLabel(): string
+    {
+        return 'Productos';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Productos';
+    }
 
     public static function form(Form $form): Form
     {
@@ -33,23 +43,33 @@ class ProductResource extends Resource
                 TextInput::make('description'),
                 TextInput::make('price')
                     ->label('Precio')
-                    ->mask(RawJs::make('$money($input'))
+                    ->placeholder('1,000')
+                    ->mask(RawJs::make('$money($input, ",")'))
                     ->stripCharacters([',', '$'])
                     ->numeric()
                     ->required()
-                    ->rules(['numeric', 'min:0'])
+                    ->rules(['min:0'])
                     ->afterStateHydrated(function ($component, $state) {
-                        // si $state es un objeto Money, extraer su valor numérico
+                        // Si $state es un objeto Money, extraer su valor numérico
                         if ($state instanceof \Money\Money) {
-                            $state = $state->getAmount(); // obtiene el valor en centavos
+                            $state = $state->getAmount(); // Obtiene el valor en centavos
                         }
-
-                        // convertir el valor de centavos a un formato legible (por ejemplo de 4444 a 44.44)
-                        $formattedPrice = number_format($state / 100, 2, '.', '');
+                        // Convertir el valor de centavos a un formato legible (por ejemplo, 4444 a 44.44)
+                        $valueInPesos = $state / 100;
+                        // Verificar si el valor tiene decimales distintos de cero
+                        if (fmod($valueInPesos, 1) == 0) {
+                            // Si no tiene decimales, formatear sin los dos ceros
+                            $formattedPrice = number_format($valueInPesos, 0, '.', ',');
+                        } else {
+                            // Si tiene decimales, formatear con dos decimales
+                            $formattedPrice = number_format($valueInPesos, 2, '.', ',');
+                        }
                         $component->state($formattedPrice);
                     })
                     ->dehydrateStateUsing(function ($state) {
-                        // convierte el valor formateado de vuelta a centavos para la base de datos
+                        // Eliminar comas y simbolos antes de convertirlo a centavos
+                        $state = str_replace([',', '$'], '', $state);
+                        // Convertir el valor formateado de vuelta a centavos para la base de datos
                         return (int) round($state * 100);
                     }),
             ]);
@@ -62,11 +82,11 @@ class ProductResource extends Resource
                 ImageColumn::make('image.path')
                     ->label('Featured Image')
                     ->size(50),
+                TextColumn::make('price')
+                    ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('description')
-                    ->searchable(),
-                TextColumn::make('price')
                     ->searchable(),
             ])
             ->filters([
