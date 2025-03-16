@@ -10,17 +10,13 @@ use Laravel\Cashier\Cashier;
 use Laravel\Fortify\Fortify;
 use App\Factories\CartFactory;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\App;
 use Money\Currencies\ISOCurrencies;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Event;
-use App\Listeners\StripeEventListener;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 use Money\Formatter\IntlMoneyFormatter;
 use App\Actions\Webshop\MigrateSessionCart;
-use Laravel\Cashier\Events\WebhookReceived;
 use Laravel\Fortify\Http\Requests\LoginRequest;
 
 class AppServiceProvider extends ServiceProvider
