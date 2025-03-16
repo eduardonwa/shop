@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
+
 /**
  * @property int $id
  * @property string $name
@@ -29,6 +31,7 @@ class User extends Authenticatable
     use Notifiable;
     use TwoFactorAuthenticatable;
     use Billable;
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -87,6 +90,6 @@ class User extends Authenticatable
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return str_ends_with($this->email, '@hotmail.com') && $this->hasVerifiedEmail();
+        return $this->hasRole('admin') && $this->hasVerifiedEmail();
     }
 }
