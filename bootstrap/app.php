@@ -2,10 +2,11 @@
 
 use Illuminate\Foundation\Application;
 use App\Console\Commands\AbandonedCart;
-use App\Console\Commands\RemoveInactiveSessionCarts;
+use App\Http\Middleware\CheckAdminRole;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Console\Commands\RemoveInactiveSessionCarts;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(

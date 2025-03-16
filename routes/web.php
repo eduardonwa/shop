@@ -7,12 +7,11 @@ Route::get('/', \App\Livewire\StoreFront::class)->name('home');
 Route::get('/product/{productId}', \App\Livewire\Product::class)->name('product');
 Route::get('/cart', \App\Livewire\Cart::class)->name('cart');
 
-Route::get('/preview', function() {
+/* Route::get('/preview', function() {
     $cart = \App\Models\User::first()->cart;
 
     return new AbandonedCartReminder($cart);
-});
-//Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
+}); */
 
 Route::middleware([
     'auth:sanctum',
