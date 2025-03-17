@@ -14,6 +14,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ImageColumn;
 use App\Filament\Resources\ProductResource\Pages;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
 class ProductResource extends Resource
 {
@@ -87,8 +88,8 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('image.path')
-                    ->label('Featured Image')
+                SpatieMediaLibraryImageColumn::make('Imagen')
+                    ->collection('featured')
                     ->size(50),
                 TextColumn::make('price')
                     ->searchable(),
