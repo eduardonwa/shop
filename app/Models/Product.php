@@ -2,23 +2,21 @@
 
 namespace App\Models;
 
-use Money\Money;
-use Money\Currency;
-use NumberFormatter;
 use App\Models\Image;
 use App\Casts\MoneyCast;
 use App\Models\ProductVariant;
-use Money\Currencies\ISOCurrencies;
+use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
-use Money\Formatter\IntlMoneyFormatter;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Product extends Model
+class Product extends Model implements HasMedia
 {
     use HasFactory;
+    use InteractsWithMedia;
 
     public $casts = [
         'price' => MoneyCast::class,
@@ -41,5 +39,21 @@ class Product extends Model
     public function images(): HasMany
     {
         return $this->hasMany(Image::class);
+    }
+
+    // relacion para obtener la imagen "principal"
+    public function productMedia()
+    {
+        return $this->belongsToMany(Media::class, 'media_product')
+            ->withPivot('featured')
+            ->withTimestamps();
+    }
+
+    // colecciones, "featured" e "imagenes"
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('featured')
+            ->singleFile();
+        $this->addMediaCollection('images');
     }
 }

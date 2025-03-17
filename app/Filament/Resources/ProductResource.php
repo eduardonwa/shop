@@ -13,6 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ImageColumn;
 use App\Filament\Resources\ProductResource\Pages;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class ProductResource extends Resource
 {
@@ -72,6 +73,13 @@ class ProductResource extends Resource
                         // Convertir el valor formateado de vuelta a centavos para la base de datos
                         return (int) round($state * 100);
                     }),
+                SpatieMediaLibraryFileUpload::make('featured_image')
+                    ->label('Imagen destacada')
+                    ->collection('featured'),
+                SpatieMediaLibraryFileUpload::make('images')
+                    ->label('Imagenes')
+                    ->collection('images')
+                    ->multiple(),
             ]);
     }
 
