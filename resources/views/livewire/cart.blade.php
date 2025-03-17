@@ -3,11 +3,11 @@
         <table class="w-full">
             <thead>
                 <tr>
-                    <th class="text-left">Product</th>
+                    <th class="text-left">Producto</th>
                     <th class="text-left">Precio</th>
                     <th class="text-left">Color</th>
-                    <th class="text-left">Size</th>
-                    <th class="text-left">Quantity</th>
+                    <th class="text-left">Tamaño</th>
+                    <th class="text-left">Cantidad</th>
                     <th class="text-right">Total</th>
                 </tr>
             </thead>
@@ -65,7 +65,23 @@
                 <p>Porfavor <a href="{{ route('register') }}" class="underline">regístrate</a> o <a href="{{ route('login') }}" class="underline">inicia sesión</a> para continuar</p>
             @endguest
             @auth
-                <x-button class="w-full justify-center" wire:click="checkout">Checkout</x-button>
+                <!-- Botón de checkout -->
+                <x-button class="w-full justify-center" wire:click="checkout">Confirmar pedido</x-button>
+
+                <!-- Mensaje de error (se muestra solo si showError es true) -->
+                @if ($showError)
+                    <div class="relative" x-data="{ showError: true }" x-show="showError" @click.outside="showError = false">
+                        <div class="absolute bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4" role="alert">
+                            <button @click="showError = false" class="absolute top-0 right-0 p-2">
+                                X
+                            </button>
+                            <span>{{ $emptyCart }}
+                                Echale un vistazo a
+                                <a href="/" class="underline">nuestro catálogo</a>
+                            </span>
+                        </div>
+                    </div>
+                @endif
             @endauth
         </x-order-panel>
     </div>

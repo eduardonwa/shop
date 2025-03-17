@@ -16,5 +16,16 @@ return [
     'failed' => 'Estas credenciales no coinciden con nuestros registros.',
     'password' => 'La contraseña proporcionada es incorrecta.',
     'throttle' => 'Demasiados intentos de inicio de sesión. Inténtelo nuevamente en :seconds segundos.',
-
+    'whoops' => '¡Ups! Algo salió mal.',
+    'terms' => 'Acepto los :terms_of_service y la :privacy_policy',
+    'terms_of_service' => 'Términos de Servicio',
+    'privacy_policy' => 'Política de Privacidad',
+    'name' => 'Nombre',
+    'password' => 'Contraseña',
+    'confirm' => 'Confirmar contraseña',
+    'registered?' => '¿Ya estás registrado?',
+    'register' => 'Registrar',
+    'remember' => 'Recuérdame',
+    'log_in' => 'Iniciar sesión',
+    'log_out' => 'Cerrar sesión'
 ];

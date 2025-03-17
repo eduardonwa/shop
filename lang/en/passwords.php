@@ -18,5 +18,16 @@ return [
     'throttled' => 'Please wait before retrying.',
     'token' => 'This password reset token is invalid.',
     'user' => "We can't find a user with that email address.",
-
+    'secure' => 'This is a secure area of the application. Please confirm your password before continuing.',
+    'confirm_password' => 'Confirm password',
+    'confirm_security' => 'For your security, please confirm your password to continue.',
+    'current_password' => 'Current password',
+    'new_password' => 'New Password',
+    'password' => 'Password',
+    'forgot?' => 'Forgot your password?',
+    'forgotten' => 'Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.',
+    'send_reset_link' => 'Email Password Reset Link',
+    'reset' => 'Reset password',
+    'update' => 'Update password',
+    'update_description' => 'Ensure your account is using a long, random password to stay secure.',
 ];

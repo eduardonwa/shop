@@ -13,7 +13,7 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link wire:navigate href="{{ route('home') }}" :active="request()->routeIs('home')">
-                        {{ __('Inicio') }}
+                        {{ __('global.home') }}
                     </x-nav-link>
 
                     @livewire('navigation-cart')
@@ -98,15 +98,15 @@
                             <x-slot name="content">
                                 <!-- Account Management -->
                                 <div class="block px-4 py-2 text-xs text-gray-400">
-                                    {{ __('Manage Account') }}
+                                    {{ __('profile.manage_account') }}
                                 </div>
 
                                 <x-dropdown-link wire:navigate href="{{ route('profile.show') }}">
-                                    {{ __('Profile') }}
+                                    {{ __('profile.profile') }}
                                 </x-dropdown-link>
 
                                 <x-dropdown-link wire:navigate href="{{ route('my-orders') }}">
-                                    {{ __('My Orders') }}
+                                    {{ __('profile.my_orders') }}
                                 </x-dropdown-link>
 
                                 @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
@@ -123,7 +123,7 @@
 
                                     <x-dropdown-link href="{{ route('logout') }}"
                                             @click.prevent="$root.submit();">
-                                        {{ __('Log Out') }}
+                                        {{ __('auth.log_out') }}
                                     </x-dropdown-link>
                                 </form>
                             </x-slot>
@@ -147,7 +147,7 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link href="{{ route('home') }}" :active="request()->routeIs('home')">
-                {{ __('Home') }}
+                {{ __('global.home') }}
             </x-responsive-nav-link>
         </div>
 
@@ -170,7 +170,7 @@
                 <div class="mt-3 space-y-1">
                     <!-- Account Management -->
                     <x-responsive-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
-                        {{ __('Profile') }}
+                        {{ __('profile.profile') }}
                     </x-responsive-nav-link>
 
                     @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
@@ -185,7 +185,7 @@
 
                         <x-responsive-nav-link href="{{ route('logout') }}"
                                     @click.prevent="$root.submit();">
-                            {{ __('Log Out') }}
+                            {{ __('auth.log_out') }}
                         </x-responsive-nav-link>
                     </form>
 

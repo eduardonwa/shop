@@ -1,9 +1,9 @@
-<x-order-panel title="My Orders" class="max-w-lg mx-auto mt-12">
+<x-order-panel title="Mis Pedidos" class="max-w-lg mx-auto mt-12">
     <table class="w-full">
         <thead>
             <tr>
-                <th class="text-left">Order</th>
-                <th class="text-left">Ordered</th>
+                <th class="text-left">Orden</th>
+                <th class="text-left">Ordenado</th>
                 <th class="text-right">Total</th>
             </tr>
         </thead>

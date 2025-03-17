@@ -10,6 +10,9 @@ use App\Actions\Webshop\CreateStripeCheckoutSession;
 
 class Cart extends Component
 {
+    public $showError = false;
+    public $emptyCart = '';
+
     #[Computed]
     public function cart()
     {
@@ -45,6 +48,14 @@ class Cart extends Component
 
     public function checkout(CreateStripeCheckoutSession $checkoutSession)
     {
+        // Validar si el carrito está vacío
+        if ($this->cart->items->isEmpty()) {
+            // Mostrar mensaje de error
+            $this->showError = true;
+            $this->emptyCart = 'Tu carrito está vacío.';
+            return;
+        }
+
         return $checkoutSession->createFromCart($this->cart);
     }
     

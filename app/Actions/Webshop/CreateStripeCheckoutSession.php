@@ -4,34 +4,35 @@ namespace App\Actions\Webshop;
 
 use App\Models\Cart;
 use App\Models\CartItem;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Collection;
 
 class CreateStripeCheckoutSession
 {
     public function createFromCart(Cart $cart)
     {
+        if ($cart->items->isEmpty()) {
+            throw new \Exception('El carrito está vacío. No se puede crear una sesión de pago sin artículos.');
+        }
+        
         return $cart->user
-        ->allowPromotionCodes()
-        ->checkout(
-            $this->formatCartItems($cart->items), [
-                'automatic_tax' => ['enabled' => false], // desactivar Stripe Tax
-                'customer_update' => [
-                    'shipping' => 'auto',
-                ],
-                // activar/desactivar esta opción si la tienda realiza envios
-                'shipping_address_collection' => [
-                    'allowed_countries' => [
-                        'US', 'MX'
-                    ]
-                ],
-                'success_url' => route('checkout-status') . '?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => route('cart'),
-                'metadata' => [
-                    'user_id' => $cart->user->id,
-                    'cart_id' => $cart->id,
-                ],
-            ]
+            ->allowPromotionCodes()
+            ->checkout(
+                $this->formatCartItems($cart->items), [
+                    'automatic_tax' => ['enabled' => false], // desactivar Stripe Tax
+                    'customer_update' => [
+                        'shipping' => 'auto',
+                    ],
+                    // activar/desactivar esta opción si la tienda realiza envios a otro pais
+                    'shipping_address_collection' => [
+                        'allowed_countries' => ['US', 'MX']
+                    ],
+                    'success_url' => route('checkout-status') . '?session_id={CHECKOUT_SESSION_ID}',
+                    'cancel_url' => route('cart'),
+                    'metadata' => [
+                        'user_id' => $cart->user->id,
+                        'cart_id' => $cart->id,
+                    ],
+                ]
         );
     }
 
@@ -47,7 +48,7 @@ class CreateStripeCheckoutSession
             return [
                 'price_data' => [
                     'currency' => 'MXN',
-                    'unit_amount' => $basePrice, // 🔥 Precio unitario sin impuestos
+                    'unit_amount' => $basePrice,
                     'product_data' => [
                         'name' => $item->product->name,
                         'description' => "Size: {$item->variant->size} - Color: {$item->variant->color}",
@@ -61,10 +62,10 @@ class CreateStripeCheckoutSession
             ];
         })->toArray();
     
-        // 🔥 Ahora calculamos el IVA total
+        // 🔥 ahora calculamos el IVA total
         $totalTax = (int) round($totalBeforeTax * $taxRate);
     
-        // 🔥 Agregar línea separada para los impuestos
+        // 🔥 agregar línea separada para los impuestos
         if ($totalTax > 0) {
             $formattedItems[] = [
                 'price_data' => [
