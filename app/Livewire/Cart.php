@@ -2,12 +2,12 @@
 
 namespace App\Livewire;
 
+use Log;
 use Livewire\Component;
 use App\Factories\CartFactory;
 use Masmerise\Toaster\Toaster;
 use Masmerise\Toaster\Toastable;
 use Livewire\Attributes\Computed;
-use Masmerise\Toaster\PendingToast;
 use App\Exceptions\EmptyCartException;
 use App\Exceptions\MinimumPurchaseAmountException;
 use App\Actions\Webshop\CreateStripeCheckoutSession;
@@ -39,7 +39,12 @@ class Cart extends Component
 
     public function increment($itemId)
     {
-        $this->cart->items()->find($itemId)?->increment('quantity');
+        $item = $this->cart->items()->find($itemId);
+        if ($item) {
+            $item->increment('quantity');
+            $this->dispatch('productAddedToCart');
+            $this->dispatch('CartUpdated');
+        }
     }
     
     public function decrement($itemId)
@@ -47,16 +52,17 @@ class Cart extends Component
         $item = $this->cart->items()->find($itemId);
 
         if (!$item) {
-            $this->dispatch('notify', ['type' => 'error', 'message' => 'Item not found.']);
             return;
         }
 
-        if ($item->quantity > 1) { 
+        if ($item->quantity > 1) {
             $item->decrement('quantity');
         } else {
             $item->delete();
-            $this->dispatch('productRemovedFromCart');
         }
+
+        $this->dispatch('productRemovedFromCart');
+        $this->dispatch('CartUpdated');
     }
 
     public function delete($itemId)
@@ -64,40 +70,39 @@ class Cart extends Component
         $this->cart->items()->where('id', $itemId)->delete();
 
         $this->dispatch('productRemovedFromCart');
+        $this->dispatch('CartUpdated');
     }
 
     public function checkout(CreateStripeCheckoutSession $checkoutSession)
     {
         try {
-            // validar si el carrito viene vacío
-            if ($this->cart->items->isEmpty()) {
-                throw new EmptyCartException();
-            }
-            // validar si el monto es menor a 10 pesos
-            if ($this->cart->total->getAmount() < 1000) {
+            if ($this->cart->total->getAmount() < 1000) { // 10 pesos
                 throw new MinimumPurchaseAmountException();
             }
-            // si no hay errores, crear la sesión de pago
+    
+            // Si no hay errores, crear la sesión de pago
             return $checkoutSession->createFromCart($this->cart);
-            // manejar los mensajes de error
-        } catch (EmptyCartException $e) {
-            $this->showError = true;
-            $this->emptyCart = $e->getMessage();
-            Toaster::info($this->emptyCart, ['showError' => $this->showError, 'emptyCart' => $this->emptyCart]);
         } catch (MinimumPurchaseAmountException $e) {
-            $this->showError = true;
-            $this->minimumAmount = $e->getMessage();
-            Toaster::info($this->minimumAmount, ['showError' => $this->showError, 'minimumAmount' => $this->minimumAmount]);
+            // Concatenar el mensaje de la excepción con el enlace HTML
+            $message = $e->getMessage() . ' <a href="/ofertas" class="underline">¡Revisa nuestras ofertas!</a>';
+    
+            // Pasar el mensaje completo al toaster
+            Toaster::info($message, [
+                'showError' => true,
+                'minimumAmount' => $message, // Pasamos el mensaje completo
+            ]);
         } catch (\Exception $e) {
-            // otros errores
-            $this->showError = true;
-            //$this->errorMessage = 'Ocurrió un error al procesar tu solicitud.';
+            // Otros errores
             Toaster::error('Ocurrió un error al procesar tu solicitud.');
         }
     }
     
     public function render()
     {
+        // si el carrito viene vacío mostrar mensaje
+        $this->showError = $this->cart->items->isEmpty();
+        $this->emptyCart = $this->showError ? 'Tu carrito está vacío.' : '';
+
         return view('livewire.cart');
     }
 }

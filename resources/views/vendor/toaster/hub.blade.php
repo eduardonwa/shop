@@ -33,7 +33,6 @@
             <!-- Contenido adicional -->
             <template x-if="toast.showError">
                 <div class="mt-2">
-                    <p x-html="toast.emptyCart"></p>
                     <p x-html="toast.minimumAmount"></p>
                 </div>
             </template>

@@ -1,4 +1,12 @@
 <div class="grid grid-cols-4 mt-12 gap-4">
+    @if ($this->cart->items->isEmpty())
+        @if($showError && $emptyCart)
+            <div>
+                <h2>{{ $emptyCart }}</h2>
+                <p>Ve nuestro <a class="underline" href="/">catálogo</a></p>
+            </div>
+        @endif
+    @else
     <x-order-panel class="col-span-3">
         <table class="w-full">
             <thead>
@@ -73,12 +81,5 @@
             @endauth
         </x-order-panel>
     </div>
-
-    {{-- <x-toast
-        :emptyCart={{ $emptyCart }}
-        :minimumAmount={{ $minimumAmount }}
-    /> --}}
-
+    @endif
 </div>
-
-
