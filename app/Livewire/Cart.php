@@ -8,7 +8,6 @@ use App\Factories\CartFactory;
 use Masmerise\Toaster\Toaster;
 use Masmerise\Toaster\Toastable;
 use Livewire\Attributes\Computed;
-use App\Exceptions\EmptyCartException;
 use App\Exceptions\MinimumPurchaseAmountException;
 use App\Actions\Webshop\CreateStripeCheckoutSession;
 
@@ -94,6 +93,7 @@ class Cart extends Component
         } catch (\Exception $e) {
             // Otros errores
             Toaster::error('Ocurrió un error al procesar tu solicitud.');
+            Log::error('Mensaje de error al procesar la solicitud: ' . $e->getMessage());
         }
     }
     
