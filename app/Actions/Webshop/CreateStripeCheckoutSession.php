@@ -10,10 +10,6 @@ class CreateStripeCheckoutSession
 {
     public function createFromCart(Cart $cart)
     {
-        if ($cart->items->isEmpty()) {
-            throw new \Exception('El carrito está vacío. No se puede crear una sesión de pago sin artículos.');
-        }
-        
         return $cart->user
             ->allowPromotionCodes()
             ->checkout(

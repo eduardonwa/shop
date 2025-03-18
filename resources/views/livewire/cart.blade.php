@@ -3,6 +3,7 @@
         <table class="w-full">
             <thead>
                 <tr>
+                    <th></th>
                     <th class="text-left">Producto</th>
                     <th class="text-left">Precio</th>
                     <th class="text-left">Color</th>
@@ -14,6 +15,9 @@
             <tbody>
                 @foreach ($this->items as $item)
                     <tr>
+                        <td>
+                            <img src="{{ $item->product->getFirstMediaUrl('featured', 'sm_thumb') }}">
+                        </td>
                         <td>{{ $item->product->name }}</td>
                         <td>{{ $item->product->price }}</td>
                         <td>{{ $item->variant->color }}</td>
@@ -28,7 +32,7 @@
                             
                             <div>{{ $item->quantity }}</div>
 
-                            <button wire:click="increment({{ $item->id }})" @disabled($item->quantity == 1)>
+                            <button wire:click="increment({{ $item->id }})">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                 </svg>
@@ -65,25 +69,16 @@
                 <p>Porfavor <a href="{{ route('register') }}" class="underline">regístrate</a> o <a href="{{ route('login') }}" class="underline">inicia sesión</a> para continuar</p>
             @endguest
             @auth
-                <!-- Botón de checkout -->
                 <x-button class="w-full justify-center" wire:click="checkout">Confirmar pedido</x-button>
-
-                <!-- Mensaje de error (se muestra solo si showError es true) -->
-                @if ($showError)
-                    <div class="relative" x-data="{ showError: true }" x-show="showError" @click.outside="showError = false">
-                        <div class="absolute bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4" role="alert">
-                            <button @click="showError = false" class="absolute top-0 right-0 p-2">
-                                X
-                            </button>
-                            <span>{{ $emptyCart }}
-                                Echale un vistazo a
-                                <a href="/" class="underline">nuestro catálogo</a>
-                            </span>
-                        </div>
-                    </div>
-                @endif
             @endauth
         </x-order-panel>
     </div>
 
+    {{-- <x-toast
+        :emptyCart={{ $emptyCart }}
+        :minimumAmount={{ $minimumAmount }}
+    /> --}}
+
 </div>
+
+
