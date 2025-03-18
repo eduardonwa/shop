@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Image;
 use App\Casts\MoneyCast;
+use Spatie\Image\Enums\Fit;
 use App\Models\ProductVariant;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
@@ -41,19 +42,33 @@ class Product extends Model implements HasMedia
         return $this->hasMany(Image::class);
     }
 
-    // relacion para obtener la imagen "principal"
-    public function productMedia()
-    {
-        return $this->belongsToMany(Media::class, 'media_product')
-            ->withPivot('featured')
-            ->withTimestamps();
-    }
-
     // colecciones, "featured" e "imagenes"
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('featured')
             ->singleFile();
         $this->addMediaCollection('images');
+    }
+
+    // conversiones de imagenes para manejar diferentes tamaños
+    public function registerMediaConversions(?Media $media = null): void
+    {   
+        $this
+            ->addMediaConversion('sm_thumb')
+            ->fit(Fit::Contain, 150, 150)
+            ->format('webp')
+            ->nonQueued();
+
+        $this
+            ->addMediaConversion('md_thumb')
+            ->fit(Fit::Contain, 300, 300)
+            ->format('webp')
+            ->nonQueued();
+
+        $this
+            ->addMediaConversion('lg_thumb')
+            ->fit(Fit::Contain, 1080, 1080)
+            ->format('webp')
+            ->nonQueued(); 
     }
 }

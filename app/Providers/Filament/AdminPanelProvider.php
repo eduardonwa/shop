@@ -30,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->spa()
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -65,6 +66,7 @@ class AdminPanelProvider extends PanelProvider
             )
             ->userMenuItems([
                 'profile' => MenuItem::make()->label('Editar perfil'),
+                'site' => MenuItem::make()->label('Ir al sitio')
             ]);
     }
 }

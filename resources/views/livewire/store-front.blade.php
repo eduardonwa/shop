@@ -16,7 +16,7 @@
                     href="{{ route('product', $product) }}"
                     class="absolute inset-0 w-full h-full"
                 >
-                    <img src="{{ $product->getFirstMediaUrl('featured') }}" class="rounded" alt="">
+                    <img src="{{ $product->getFirstMediaUrl('featured', 'md_thumb') }}" class="rounded" alt="">
                     <h2 class="font-medium text-lg">{{ $product->name }}</h2>
                     <span class="text-gray-700 text-sm">{{ $product->price }}</span>
                 </a>

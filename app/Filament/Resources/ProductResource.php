@@ -11,7 +11,6 @@ use Filament\Support\RawJs;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\ImageColumn;
 use App\Filament\Resources\ProductResource\Pages;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
@@ -76,11 +75,13 @@ class ProductResource extends Resource
                     }),
                 SpatieMediaLibraryFileUpload::make('featured_image')
                     ->label('Imagen destacada')
-                    ->collection('featured'),
+                    ->collection('featured')
+                    ->image(),
                 SpatieMediaLibraryFileUpload::make('images')
                     ->label('Imagenes')
                     ->collection('images')
-                    ->multiple(),
+                    ->multiple()
+                    ->image(),
             ]);
     }
 

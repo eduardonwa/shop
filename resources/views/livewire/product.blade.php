@@ -1,13 +1,13 @@
 <div class="grid grid-cols-2 gap-10 py-12">
     <div class="space-y-4">
         <div class="bg-white p-5 rounded-lg shadow">
-            <img class="mx-auto" src="{{ $this->product->getFirstMediaUrl('featured') }}" alt="Featured Image">
+            <img class="mx-auto" src="{{ $this->product->getFirstMediaUrl('featured', 'lg_thumb') }}" alt="Featured Image">
         </div>
     
         <div class="grid grid-cols-4 gap-4">
             @foreach ($this->product->getMedia('images') as $image)
                 <div class="rounded bg-white p-2 rounded shadow">
-                    <img src="{{ $image->getUrl() }}" class="rounded" alt="">
+                    <img src="{{ $image->getUrl('sm_thumb') }}" class="rounded" alt="">
                 </div>
             @endforeach
         </div>
