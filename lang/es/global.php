@@ -7,4 +7,5 @@ return [
     'saved' => 'Guardado',
     'dashboard' => 'Panel',
     'home' => 'Inicio',
+    'code' => 'Código',
 ];

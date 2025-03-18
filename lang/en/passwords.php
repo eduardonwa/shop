@@ -14,6 +14,7 @@ return [
     */
 
     'reset' => 'Your password has been reset.',
+    'provided_password_is_wrong' => 'The provided password does not match your current password',
     'sent' => 'We have emailed your password reset link.',
     'throttled' => 'Please wait before retrying.',
     'token' => 'This password reset token is invalid.',

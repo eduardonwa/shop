@@ -1,6 +1,5 @@
 <?php
 
-use App\Mail\AbandonedCartReminder;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', \App\Livewire\StoreFront::class)->name('home');

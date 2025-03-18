@@ -84,10 +84,6 @@
     </x-slot>
 
     <x-slot name="actions">
-        <x-action-message class="me-3" on="saved">
-            {{ __('global.saved') }}
-        </x-action-message>
-
         <x-button wire:loading.attr="disabled" wire:target="photo">
             {{ __('global.save') }}
         </x-button>

@@ -14,6 +14,7 @@ return [
     */
 
     'reset' => 'Se ha restablecido su contraseña.',
+    'provided_password_is_wrong' => 'La contraseña proporcionada no coincide con su contraseña actual',
     'sent' => 'Le hemos enviado por correo electrónico un enlace para restablecer su contraseña.',
     'throttled' => 'Espere antes de volver a intentarlo.',
     'token' => 'Este token para restablecer su contraseña no es válido.',

@@ -27,5 +27,6 @@ return [
     'register' => 'Registrar',
     'remember' => 'Recuérdame',
     'log_in' => 'Iniciar sesión',
-    'log_out' => 'Cerrar sesión'
+    'log_out' => 'Cerrar sesión',
+    'two_factor_invalid' => 'The provided two factor authentication code was invalid.',
 ];

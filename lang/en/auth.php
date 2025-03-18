@@ -25,5 +25,6 @@ return [
     'register' => 'Register',
     'remember' => 'Remember me',
     'log_in' => 'Log In',
-    'log_out' => 'Log Out'
+    'log_out' => 'Log Out',
+    'two_factor_invalid' => 'El código de autenticación de dos factores proporcionado no es válido.',
 ];

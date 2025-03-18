@@ -4,6 +4,7 @@ return [
         // browser sessions
     'profile' => 'Perfil',
     'profile_info' => 'Información del perfil',
+    'edit_profile' => 'Editar Perfil',
     'profile_description' => 'Actualice la información del perfil y la dirección de correo electrónico de su cuenta',
     'delete' => 'Eliminar cuenta',
     'permanently_delete' => 'Eliminar permanentemente tu cuenta.',
@@ -33,6 +34,11 @@ return [
     'regenerate_codes' => 'Regenerar Códigos de Recuperación',
     'show_codes' => 'Mostrar Códigos de Recuperación',
     'disable' => 'Desactivar',
+    'challenge_auth_code' => 'Por favor, confirme el acceso a su cuenta ingresando el código de autenticación proporcionado por su aplicación de autenticación.',
+    'challenge_use_recovery_code' => 'Usar código de recuperación',
+    'challenge_use_auth_code' => 'Usar código de autenticación',
+    'challenge_use_emergency_code' => 'Confirme el acceso a su cuenta ingresando uno de sus códigos de recuperación de emergencia',
+    'recovery_code_title' => 'Código de recuperación',
         // fotos
     'photo' => 'Foto',
     'new_photo' => 'Seleccione una nueva foto',

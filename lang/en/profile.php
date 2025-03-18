@@ -4,6 +4,7 @@ return [
         // sesiones del navegador
     'profile' => 'Profile',
     'profile_info' => 'Profile Information',
+    'edit_profile' => 'Edit Profile',
     'profile_description' => 'Update your account\'s profile information and email address',
     'delete' => 'Delete Account',
     'permanently_delete' => 'Permanently delete your account.',
@@ -33,6 +34,11 @@ return [
     'regenerate_codes' => 'Regenerate Recovery Codes',
     'show_codes' => 'Show Recovery Codes',
     'disable' => 'Disable',
+    'challenge_auth_code' => 'Please confirm access to your account by entering the authentication code provided by your authenticator application',
+    'challenge_use_recovery_code' => 'Use a recovery code',
+    'challenge_use_auth_code' => 'Use an authentication code',
+    'challenge_use_emergency_code' => 'Please confirm access to your account by entering one of your emergency recovery codes',
+    'recovery_code_title' => 'Recovery Code',
         // foto
     'photo' => 'Photo',
     'new_photo' => 'Select A New Photo',

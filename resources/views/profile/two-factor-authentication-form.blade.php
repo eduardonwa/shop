@@ -33,7 +33,7 @@
                         @if ($showingConfirmation)
                             {{ __('profile.2fa_finish_enabling') }}
                         @else
-                            {{ __('profile.2fa_now_eanbled') }}
+                            {{ __('profile.2fa_now_enabled') }}
                         @endif
                     </p>
                 </div>

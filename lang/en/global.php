@@ -7,4 +7,5 @@ return [
     'saved' => 'Saved',
     'dashboard' => 'Dashboard',
     'home' => 'Home',
+    'code' => 'Code',
 ];
