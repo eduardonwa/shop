@@ -12,8 +12,9 @@ use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use App\Filament\Resources\ProductResource\Pages;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use App\Filament\Resources\ProductResource\RelationManagers\VariantsRelationManager;
 
 class ProductResource extends Resource
 {
@@ -93,10 +94,16 @@ class ProductResource extends Resource
                     ->collection('featured')
                     ->size(50),
                 TextColumn::make('price')
+                    ->label('Precio')
                     ->searchable(),
                 TextColumn::make('name')
+                    ->label('Nombre')
                     ->searchable(),
+                TextColumn::make('variants_count')
+                    ->label('Variantes')
+                    ->counts('variants'),
                 TextColumn::make('description')
+                    ->label('Descripción')
                     ->searchable(),
             ])
             ->filters([
@@ -115,7 +122,7 @@ class ProductResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            VariantsRelationManager::class,
         ];
     }
 
