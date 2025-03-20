@@ -1,16 +1,17 @@
 <?php
 
+use App\Mail\OrderConfirmation;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', \App\Livewire\StoreFront::class)->name('home');
 Route::get('/product/{productId}', \App\Livewire\Product::class)->name('product');
 Route::get('/cart', \App\Livewire\Cart::class)->name('cart');
 
-/* Route::get('/preview', function() {
-    $cart = \App\Models\User::first()->cart;
+Route::get('/preview', function() {
+    $cart = \App\Models\OrderItem::first()->orderId;
 
-    return new AbandonedCartReminder($cart);
-}); */
+    return new OrderConfirmation($cart);
+});
 
 Route::middleware([
     'auth:sanctum',

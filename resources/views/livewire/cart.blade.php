@@ -11,11 +11,10 @@
         <table class="w-full">
             <thead>
                 <tr>
-                    <th></th>
+                    <th class="text-left">Imagen</th>
                     <th class="text-left">Producto</th>
                     <th class="text-left">Precio</th>
-                    <th class="text-left">Color</th>
-                    <th class="text-left">Tamaño</th>
+                    <th class="text-left">Información</th>
                     <th class="text-left">Cantidad</th>
                     <th class="text-right">Total</th>
                 </tr>
@@ -28,8 +27,12 @@
                         </td>
                         <td>{{ $item->product->name }}</td>
                         <td>{{ $item->product->price }}</td>
-                        <td>{{ $item->variant->color }}</td>
-                        <td>{{ $item->variant->size }}</td>
+
+                        <td>
+                            @foreach ($item->variant->attributes as $attribute)
+                               {{ $attribute->key }}: {{ $attribute->value }}
+                            @endforeach
+                        </td>
                         
                         <td class="flex items-center">
                             <button wire:click="decrement({{ $item->id }})">

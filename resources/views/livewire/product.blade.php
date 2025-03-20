@@ -25,7 +25,10 @@
             <select wire:model="variant" class="block w-full rounded-md border-0 py-1.5 pr-10 text-gray-800">
                 @foreach ($this->product->variants as $variant)
                     <option value="{{ $variant->id }}">
-                        {{ $variant->size }} / {{ $variant->color }}
+                        @foreach ($variant->attributes as $attribute)
+                            {{ $attribute->key }}: {{ $attribute->value }}
+                            @if (!$loop->last) / @endif
+                        @endforeach
                     </option>
                 @endforeach
             </select>

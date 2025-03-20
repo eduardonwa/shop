@@ -27,6 +27,7 @@ class Product extends Component
 
     public function mount()
     {
+        // obtiene el ID de la primera variante del producto
         $this->variant = $this->product->variants()->value('id');
     }
 
@@ -46,7 +47,7 @@ class Product extends Component
     #[Computed]
     public function product()
     {
-        return \App\Models\Product::findOrFail($this->productId);
+        return \App\Models\Product::with('variants.attributes')->findOrFail($this->productId);
     }
 
     public function render()

@@ -8,6 +8,7 @@ use App\Models\User;
 use Stripe\LineItem;
 use App\Models\OrderItem;
 use Laravel\Cashier\Cashier;
+use App\Models\ProductVariant;
 use App\Mail\OrderConfirmation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -61,10 +62,16 @@ class HandleCheckoutSessionCompleted
                     return null; // O manejar el error de otra manera
                 }
 
+                // Obtener la variante y sus atributos
+                $variant = ProductVariant::with('attributes')->find($product->metadata->product_variant_id);
+                $attributesDescription = $variant->attributes->map(function ($attribute) {
+                    return "{$attribute->key}: {$attribute->value}";
+                })->implode(' / ');
+
                 return new OrderItem([
                     'product_variant_id'    => $product->metadata->product_variant_id,
                     'name'                  => $product->name,
-                    'description'           => $product->description,
+                    'description'           => $attributesDescription,
                     'price'                 => $line->price->unit_amount, 
                     'quantity'              => $line->quantity,
                     'amount_discount'       => $line->amount_discount,

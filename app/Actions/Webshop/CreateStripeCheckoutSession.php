@@ -37,17 +37,22 @@ class CreateStripeCheckoutSession
         $taxRate = 0.16; // IVA del 16% en México
         $totalBeforeTax = 0; // Variable para calcular la base imponible
     
-        $formattedItems = $items->loadMissing('product', 'variant')->map(function (CartItem $item) use (&$totalBeforeTax) {
+        $formattedItems = $items->loadMissing('product', 'variant.attributes')->map(function (CartItem $item) use (&$totalBeforeTax) {
             $basePrice = $item->product->price->getAmount(); // Precio base en centavos
             $totalBeforeTax += $basePrice * $item->quantity; // Acumular total sin impuestos
-    
+            
+            // Obtener los atributos de la variante
+            $attributesDescription = $item->variant->attributes->map(function ($attribute) {
+                return "{$attribute->key}: {$attribute->value}";
+            })->implode(' / ');
+            
             return [
                 'price_data' => [
                     'currency' => 'MXN',
                     'unit_amount' => $basePrice,
                     'product_data' => [
                         'name' => $item->product->name,
-                        'description' => "Size: {$item->variant->size} - Color: {$item->variant->color}",
+                        'description' => $attributesDescription,
                         'metadata' => [
                             'product_id' => $item->product->id,
                             'product_variant_id' => $item->product_variant_id,

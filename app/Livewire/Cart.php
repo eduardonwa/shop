@@ -20,6 +20,7 @@ class Cart extends Component
     public $minimumAmount = '';
     public $errorMessage = '';
 
+
     public $listeners = [
         'CartUpdated' => '$refresh',
     ];
