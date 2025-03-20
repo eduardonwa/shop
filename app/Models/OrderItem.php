@@ -16,5 +16,10 @@ class OrderItem extends Model
         'amount_total' => MoneyCast::class,
         'amount_subtotal' => MoneyCast::class,
         'amount_discount' => MoneyCast::class,
-    ]; 
+    ];
+    
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
+    }
 }

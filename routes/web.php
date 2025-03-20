@@ -7,11 +7,11 @@ Route::get('/', \App\Livewire\StoreFront::class)->name('home');
 Route::get('/product/{productId}', \App\Livewire\Product::class)->name('product');
 Route::get('/cart', \App\Livewire\Cart::class)->name('cart');
 
-Route::get('/preview', function() {
-    $cart = \App\Models\OrderItem::first()->orderId;
+/* Route::get('/preview', function() {
+    $order = \App\Models\Order::with('items.variant.attributes')->first();
 
-    return new OrderConfirmation($cart);
-});
+    return new OrderConfirmation($order);
+}); */
 
 Route::middleware([
     'auth:sanctum',
