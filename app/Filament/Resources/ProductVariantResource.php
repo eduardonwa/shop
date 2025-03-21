@@ -33,7 +33,7 @@ class ProductVariantResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('product_count')
-                    ->label('Variantes')
+                    ->label('Variaciones')
                     ->counts('product'),
                 TextColumn::make('product.name')
                     ->label('Producto'),

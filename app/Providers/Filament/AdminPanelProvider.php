@@ -6,11 +6,14 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
+use Filament\Support\Assets\Css;
 use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
 use Filament\Pages\Auth\EditProfile;
+use Illuminate\Support\Facades\Vite;
 use App\Http\Middleware\CheckAdminRole;
 use Filament\Http\Middleware\Authenticate;
+use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -25,6 +28,12 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $cssPath = Vite::asset('resources/css/app.css');
+
+        FilamentAsset::register([
+            Css::make('custom-stylesheet', $cssPath),
+        ]);
+
         return $panel
             ->default()
             ->id('admin')
@@ -62,7 +71,7 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->profile(
                 EditProfile::class,
-                isSimple: false,
+                isSimple: false, // editar perfil con la navegacion por un lado
             )
             ->userMenuItems([
                 'profile' => MenuItem::make()->label('Editar perfil'),
