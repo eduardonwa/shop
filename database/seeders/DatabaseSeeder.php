@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
 
         $adminUser->assignRole($adminRole);
 
-        Product::factory(4)
+        /* Product::factory(4)
             ->hasVariants(5, function (array $attributes, Product $product) {
                 return ['product_id' => $product->id];
             })
@@ -49,6 +49,6 @@ class DatabaseSeeder extends Seeder
                         'product_variant_id' => $variant->id,
                     ]);
                 });
-            });
+            }); */
     }
 }

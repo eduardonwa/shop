@@ -20,13 +20,13 @@
         <div class="mt-4">
             {{ $this->product->description }}
         </div>
-
+    
         <div class="mt-4 space-y-4">
             <select wire:model="variant" class="block w-full rounded-md border-0 py-1.5 pr-10 text-gray-800">
                 @foreach ($this->product->variants as $variant)
                     <option value="{{ $variant->id }}">
-                        @foreach ($variant->attributes as $attribute)
-                            {{ $attribute->key }}: {{ $attribute->value }}
+                        @foreach ($variant->attributes as $attributeVariant)
+                            {{ $attributeVariant->attribute->key . ':' ?? '' }} {{ $attributeVariant->value }}
                             @if (!$loop->last) / @endif
                         @endforeach
                     </option>

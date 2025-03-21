@@ -64,8 +64,8 @@ class HandleCheckoutSessionCompleted
 
                 // Obtener la variante y sus atributos
                 $variant = ProductVariant::with('attributes')->find($product->metadata->product_variant_id);
-                $attributesDescription = $variant->attributes->map(function ($attribute) {
-                    return "{$attribute->key}: {$attribute->value}";
+                $attributesDescription = $variant->attributes->map(function ($attributeVariant) {
+                    return "{$attributeVariant->attribute->key}: {$attributeVariant->value}";
                 })->implode(' / ');
 
                 return new OrderItem([

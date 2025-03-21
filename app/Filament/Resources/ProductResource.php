@@ -99,9 +99,6 @@ class ProductResource extends Resource
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
-                TextColumn::make('variants_count')
-                    ->label('Variantes')
-                    ->counts('variants'),
                 TextColumn::make('description')
                     ->label('Descripción')
                     ->searchable(),

@@ -16,7 +16,7 @@
                         {{ __('global.home') }}
                     </x-nav-link>
 
-                    @livewire('navigation-cart')
+                    @livewire('navigation-cart')                  
                 </div>
             </div>
 
@@ -131,6 +131,18 @@
                     </div>
                 </div>
             @endauth
+
+            @guest
+                <div class="flex justify-center align-center">
+                    <x-nav-link wire:navigate href="{{ route('login') }}">
+                        {{ __('auth.log_in') }}
+                    </x-nav-link>
+    
+                    <x-nav-link wire:navigate href="{{ route('register') }}">
+                        {{ __('auth.register') }}
+                    </x-nav-link>
+                </div>
+            @endguest  
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
                 <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">

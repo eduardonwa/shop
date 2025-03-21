@@ -29,8 +29,8 @@
                         <td>{{ $item->product->price }}</td>
 
                         <td>
-                            @foreach ($item->variant->attributes as $attribute)
-                               {{ $attribute->key }}: {{ $attribute->value }}
+                            @foreach ($item->variant->attributes as $attributeVariant)
+                               {{ $attributeVariant->attribute->key . ':' ?? '' }} {{ $attributeVariant->value }}
                             @endforeach
                         </td>
                         

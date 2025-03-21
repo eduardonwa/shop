@@ -28,7 +28,12 @@ class Cart extends Component
     #[Computed]
     public function cart()
     {
-        return CartFactory::make()->loadMissing(['items', 'items.product', 'items.variant']);
+        return CartFactory::make()->loadMissing([
+            'items',
+            'items.product',
+            'items.variant',
+            'items.variant.attributes.attribute',
+        ]);
     }
 
     #[Computed]

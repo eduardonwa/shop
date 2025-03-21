@@ -32,15 +32,11 @@ class ProductVariantResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('product_count')
+                    ->label('Variantes')
+                    ->counts('product'),
                 TextColumn::make('product.name')
                     ->label('Producto'),
-                TextColumn::make('attribute')
-                    ->label('Atributos')
-                    ->formatStateUsing(function ($state) {
-                      return $state->map(function ($attribute) {
-                        return $attribute->key . ': ' . $attribute->value;
-                      })->implode(', ');
-                    }),
             ])
             ->filters([
                 //

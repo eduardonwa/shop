@@ -42,8 +42,8 @@ class CreateStripeCheckoutSession
             $totalBeforeTax += $basePrice * $item->quantity; // Acumular total sin impuestos
             
             // Obtener los atributos de la variante
-            $attributesDescription = $item->variant->attributes->map(function ($attribute) {
-                return "{$attribute->key}: {$attribute->value}";
+            $attributesDescription = $item->variant->attributes->map(function ($attributeVariant) {
+                return "{$attributeVariant->attribute->key}: {$attributeVariant->value}";
             })->implode(' / ');
             
             return [

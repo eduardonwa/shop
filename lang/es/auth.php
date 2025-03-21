@@ -24,7 +24,7 @@ return [
     'password' => 'Contraseña',
     'confirm' => 'Confirmar contraseña',
     'registered?' => '¿Ya estás registrado?',
-    'register' => 'Registrar',
+    'register' => 'Regístrate',
     'remember' => 'Recuérdame',
     'log_in' => 'Iniciar sesión',
     'log_out' => 'Cerrar sesión',
