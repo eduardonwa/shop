@@ -43,11 +43,13 @@ class ProductResource extends Resource
                     ->schema([
                         SpatieMediaLibraryFileUpload::make('featured_image')
                             ->label('Imagen destacada')
+                            ->maxSize(3000)
                             ->collection('featured')
                             ->image()
                             ->columnSpanFull(),
                         SpatieMediaLibraryFileUpload::make('images')
                             ->label('Imagenes')
+                            ->maxSize(1500)
                             ->collection('images')
                             ->multiple()
                             ->image()
