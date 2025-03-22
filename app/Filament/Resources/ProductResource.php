@@ -25,11 +25,6 @@ class ProductResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::count();
-    }
-
     public static function getModelLabel(): string
     {
         return 'Productos';
@@ -128,6 +123,9 @@ class ProductResource extends Resource
                 TextColumn::make('description')
                     ->label('Descripción')
                     ->searchable(),
+                TextColumn::make('variants_count')
+                    ->label('Variaciones')
+                    ->counts('variants'),
             ])
             ->filters([
                 //

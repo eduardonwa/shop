@@ -8,11 +8,13 @@ use Filament\Forms\Form;
 use App\Models\Attribute;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Columns\TextColumn;
 
 class VariantsRelationManager extends RelationManager
 {
@@ -29,14 +31,13 @@ class VariantsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Repeater::make('attributes') // Nombre de la relación en el modelo
+                Repeater::make('attributes')
                     ->label('Grupo')
                     ->relationship('attributes') // Relación con `AttributeVariant`
-                    // wrapper de las tarjetas
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                Forms\Components\Select::make('attribute_id')
+                                Select::make('attribute_id')
                                     ->label('Nombre')
                                     ->relationship('attribute', 'key') // Relación con `attributes` (singular)
                                     ->searchable()
@@ -49,11 +50,11 @@ class VariantsRelationManager extends RelationManager
                                         // Crear una nueva clave en la tabla attributes
                                         return Attribute::create(['key' => $data['key']])->id;
                                     }),
-                                Forms\Components\TextInput::make('value')
+                                TextInput::make('value')
                                     ->label('Valor')
                                     ->required(),
                            ])
-                    ])->columnSpanFull()
+                    ])
                     ->collapsible()
                     ->reorderable()
                     ->extraAttributes(['class' => 'repeater-grid']),
@@ -66,18 +67,15 @@ class VariantsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                TextColumn::make('id')
                     ->label('ID'),
-                Tables\Columns\TextColumn::make('attributes.attribute.key')
+                TextColumn::make('attributes.attribute.key')
                     ->label('Atributos')
                     ->searchable()
-                    // mostrar resultados de variantes en una linea, "nombre": "valor"
                     ->formatStateUsing(function ($record) {
-                        // Cargar las relaciones
-                        $record->load('attributes.attribute'); 
                         // Obtener todas las combinaciones de key (de la tabla attributes) y value (de la tabla attribute_variants), luego unirlas en una sola línea
+                        $record->load('attributes.attribute');
                         return $record->attributes->map(function ($attributeVariant) {
-                            // Acceder a los atributos y valores correctamente desde la relación
                             return "{$attributeVariant->attribute->key}: {$attributeVariant->value}";
                         })->join(', ') ?? 'No hay atributos';
                     }),

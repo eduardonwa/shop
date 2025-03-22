@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 use Money\Currencies\ISOCurrencies;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Blade;
+use Filament\Tables\Actions\EditAction;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 use Money\Formatter\IntlMoneyFormatter;
@@ -81,6 +82,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         CreateAction::configureUsing(function ($action) {
+            return $action->slideOver();
+        });
+        EditAction::configureUsing(function ($action) {
             return $action->slideOver();
         });
     }
