@@ -39,7 +39,7 @@ class Cart extends Component
     #[Computed]
     public function items()
     {
-        return$this->cart->items;
+        return $this->cart->items;
     }
 
     public function increment($itemId)

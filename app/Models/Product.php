@@ -43,16 +43,6 @@ class Product extends Model implements HasMedia
         return $this->hasMany(Image::class);
     }
 
-    public function updateTotalStock()
-    {
-        $this->total_product_stock = $this->variants->sum('total_variant_stock');
-        $this->save();
-
-        if ($this->total_stock <= 0) {
-            $this->update(['is_published' => false]);
-        }
-    }
-
     // calcular el stock total si el producto tiene "variants"
     public function getTotalStockAttribute()
     {
@@ -62,6 +52,34 @@ class Product extends Model implements HasMedia
         } else {
             // Si no tiene variaciones, usar el campo total_stock
             return $this->total_product_stock;
+        }
+    }
+
+    public function updateStockFromVariants()
+    {
+        if ($this->variants->isNotEmpty()) {
+            // si el producto tiene variantes, el stock total será la suma de las variantes
+            $this->total_product_stock = $this->variants->sum('total_variant_stock');
+        } else {
+            // si el producto no tiene variantes, el stock total es el valor de total_product_stock
+        }
+        $this->save();
+        // si el stock total es 0, marcar el producto como no publicado 
+        if ($this->total_product_stock === 0) {
+            $this->update(['is_published' => false]);
+        }
+    }
+
+    public function decreaseStock($quantity)
+    {
+        // disminuir el stock del producto
+        $this->total_product_stock -= $quantity;
+        $this->save();
+
+        // si el stock total es 0 o menos, el producto está agotado
+        if ($this->total_product_stock <= 0) {
+            $this->update(['is_published' => false]);
+            // mandarle un mensaje al frontend
         }
     }
 

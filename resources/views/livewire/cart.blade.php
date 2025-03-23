@@ -20,6 +20,7 @@
                 </tr>
             </thead>
             <tbody>
+                {{--  @dd($this->items) --}}
                 @foreach ($this->items as $item)
                     <tr>
                         <td>
@@ -27,12 +28,14 @@
                         </td>
                         <td>{{ $item->product->name }}</td>
                         <td>{{ $item->product->price }}</td>
-
-                        <td>
-                            @foreach ($item->variant->attributes as $attributeVariant)
-                               {{ $attributeVariant->attribute->key . ':' ?? '' }} {{ $attributeVariant->value }}
-                            @endforeach
-                        </td>
+                        
+                        @if($item->variant)
+                            <td>
+                                @foreach ($item->variant->attributes as $attributeVariant)
+                                    {{ $attributeVariant->attribute->key . ':' ?? '' }} {{ $attributeVariant->value }}
+                                @endforeach
+                            </td>
+                        @endif
                         
                         <td class="flex items-center">
                             <button wire:click="decrement({{ $item->id }})">

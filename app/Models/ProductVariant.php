@@ -22,19 +22,24 @@ class ProductVariant extends Model
 
     public function decreaseStock($quantity)
     {
-        if ($this->total_variant_stock >= $quantity) {
-            $this->total_variant_stock -= $quantity;
-            $this->save();
-
-            if ($this->stock <= 0) {
-                $this->update(['total_variant_stock' => 0]);
-            }
-
-            // actualiza el stock total del producto
-            $this->product->updateTotalProductStock();
-        } else {
+        // Verifica si hay suficiente stock
+        if ($this->total_variant_stock < $quantity) {
             throw new \Exception('No hay suficiente stock disponible.');
         }
+    
+        // Disminuye el stock
+        $this->total_variant_stock -= $quantity;
+    
+        // Asegura que el stock no sea negativo
+        if ($this->total_variant_stock < 0) {
+            $this->total_variant_stock = 0;
+        }
+    
+        // Guarda los cambios en la base de datos
+        $this->save();
+    
+        // Actualiza el stock total del producto asociado
+        $this->product->updateStockFromVariants();
     }
 
     public function isAvailable()
