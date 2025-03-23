@@ -45,7 +45,7 @@ class Product extends Model implements HasMedia
 
     public function updateTotalStock()
     {
-        $this->total_stock = $this->variants->sum('stock');
+        $this->total_product_stock = $this->variants->sum('total_variant_stock');
         $this->save();
 
         if ($this->total_stock <= 0) {
@@ -58,10 +58,10 @@ class Product extends Model implements HasMedia
     {
         if ($this->variants->isNotEmpty()) {
             // Si tiene variaciones, sumar el stock de todas las variaciones
-            return $this->variants->sum('stock');
+            return $this->variants->sum('total_variant_stock');
         } else {
             // Si no tiene variaciones, usar el campo total_stock
-            return $this->total_stock;
+            return $this->total_product_stock;
         }
     }
 

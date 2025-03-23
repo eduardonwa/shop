@@ -104,7 +104,7 @@ class ProductResource extends Resource
                         Toggle::make('published')
                             ->label('Publicar')
                             ->inline(false),
-                        TextInput::make('total_stock')
+                        TextInput::make('total_product_stock')
                             ->label('Inventario')
                             ->numeric(),
                 ])->columnSpan([
@@ -132,7 +132,7 @@ class ProductResource extends Resource
                 TextColumn::make('variants_count')
                     ->label('Variaciones')
                     ->counts('variants'),
-                TextColumn::make('total_stock')
+                TextColumn::make('total_product_stock')
                     ->label('Inventario'),
                 TextColumn::make('description')
                     ->label('Descripción')

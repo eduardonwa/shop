@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('product_variants', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Product::class)->constrained()->onDelete('cascade');
-            $table->unsignedInteger('stock')->default(0);
+            $table->unsignedInteger('total_variant_stock')->default(0);
             $table->timestamps();
         });
     }

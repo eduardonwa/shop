@@ -14,6 +14,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\KeyValue;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\ProductVariantResource\Pages;
@@ -64,7 +65,9 @@ class ProductVariantResource extends Resource
                                     'value' => $value,
                                 ]);
                             }
-                        })
+                        }),
+                    TextInput::make('total_variant_stock')
+                        ->numeric(),
                     ])
             ]);
     }
@@ -84,7 +87,7 @@ class ProductVariantResource extends Resource
                             ->map(fn ($attributeVariant) => $attributeVariant->attribute->key . ': ' . $attributeVariant->value)
                             ->join(', ');
                     }),
-                TextColumn::make('stock')
+                TextColumn::make('total_variant_stock')
                     ->label('Inventario')
             ])
             ->filters([

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('description');
             $table->unsignedInteger('price');
             $table->boolean('published')->default(false);
-            $table->unsignedInteger('total_stock')->default(0);
+            $table->unsignedInteger('total_product_stock')->default(0);
             $table->timestamps();
         });
     }
