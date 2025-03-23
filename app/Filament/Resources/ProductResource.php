@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Filament\Support\RawJs;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
@@ -100,6 +101,12 @@ class ProductResource extends Resource
                                 // Convertir el valor formateado de vuelta a centavos para la base de datos
                                 return (int) round($state * 100);
                             }),
+                        Toggle::make('published')
+                            ->label('Publicar')
+                            ->inline(false),
+                        TextInput::make('total_stock')
+                            ->label('Inventario')
+                            ->numeric(),
                 ])->columnSpan([
                     'default' => 1,
                     'sm' => 12,
@@ -122,12 +129,14 @@ class ProductResource extends Resource
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
-                TextColumn::make('description')
-                    ->label('Descripción')
-                    ->searchable(),
                 TextColumn::make('variants_count')
                     ->label('Variaciones')
                     ->counts('variants'),
+                TextColumn::make('total_stock')
+                    ->label('Inventario'),
+                TextColumn::make('description')
+                    ->label('Descripción')
+                    ->searchable(),
             ])
             ->filters([
                 //

@@ -43,7 +43,7 @@
 
                 @if ($this->order->amount_tax->isPositive())
                     <tr>
-                        <td colspan="2" class="text-right font-medium">Impuesto</td>
+                        <td colspan="2" class="text-right font-medium">IVA (%16)</td>
                         <td class="font-medium text-right">{{ $this->order->amount_tax }}</td>
                     </tr>
                 @endif

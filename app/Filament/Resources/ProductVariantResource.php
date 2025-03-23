@@ -84,6 +84,8 @@ class ProductVariantResource extends Resource
                             ->map(fn ($attributeVariant) => $attributeVariant->attribute->key . ': ' . $attributeVariant->value)
                             ->join(', ');
                     }),
+                TextColumn::make('stock')
+                    ->label('Inventario')
             ])
             ->filters([
                 //

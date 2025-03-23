@@ -25,6 +25,7 @@ class Product extends Model implements HasMedia
         'amount_total' => MoneyCast::class,
         'amount_subtotal' => MoneyCast::class,
         'amount_discount' => MoneyCast::class,
+        'is_admin' => 'boolean',
     ];
 
     public function variants(): HasMany
@@ -40,6 +41,28 @@ class Product extends Model implements HasMedia
     public function images(): HasMany
     {
         return $this->hasMany(Image::class);
+    }
+
+    public function updateTotalStock()
+    {
+        $this->total_stock = $this->variants->sum('stock');
+        $this->save();
+
+        if ($this->total_stock <= 0) {
+            $this->update(['is_published' => false]);
+        }
+    }
+
+    // calcular el stock total si el producto tiene "variants"
+    public function getTotalStockAttribute()
+    {
+        if ($this->variants->isNotEmpty()) {
+            // Si tiene variaciones, sumar el stock de todas las variaciones
+            return $this->variants->sum('stock');
+        } else {
+            // Si no tiene variaciones, usar el campo total_stock
+            return $this->total_stock;
+        }
     }
 
     // colecciones, "featured" e "imagenes"

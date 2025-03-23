@@ -35,16 +35,21 @@ class CreateStripeCheckoutSession
     private function formatCartItems(Collection $items)
     {
         $taxRate = 0.16; // IVA del 16% en México
-        $totalBeforeTax = 0; // Variable para calcular la base imponible
+        $subtotal = 0; // subtotal sin impuestos
     
-        $formattedItems = $items->loadMissing('product', 'variant.attributes')->map(function (CartItem $item) use (&$totalBeforeTax) {
+        $formattedItems = $items->loadMissing('product', 'variant.attributes')->map(function (CartItem $item) use (&$subtotal) {
             $basePrice = $item->product->price->getAmount(); // Precio base en centavos
-            $totalBeforeTax += $basePrice * $item->quantity; // Acumular total sin impuestos
+            
+            if ($basePrice === null) {
+                throw new \Exception("El precio base del producto no está definido.");
+            }
+
+            $subtotal += $basePrice * $item->quantity; // Acumular total sin impuestos
             
             // Obtener los atributos de la variante
             $attributesDescription = $item->variant->attributes->map(function ($attributeVariant) {
                 return "{$attributeVariant->attribute->key}: {$attributeVariant->value}";
-            })->implode(' / ');
+            })->implode('/');
             
             return [
                 'price_data' => [
@@ -62,10 +67,14 @@ class CreateStripeCheckoutSession
                 'quantity' => $item->quantity,
             ];
         })->toArray();
-    
+        
+        if ($subtotal < 0) {
+            throw new \Exception("El subtotal no puede ser negativo.");
+        }
+        
         // 🔥 ahora calculamos el IVA total
-        $totalTax = (int) round($totalBeforeTax * $taxRate);
-    
+        $totalTax = (int) round($subtotal * $taxRate);
+        
         // 🔥 agregar línea separada para los impuestos
         if ($totalTax > 0) {
             $formattedItems[] = [
@@ -75,11 +84,20 @@ class CreateStripeCheckoutSession
                     'product_data' => [
                         'name' => 'IVA (16%)', // Nombre visible en el checkout
                         'description' => 'Impuesto al Valor Agregado',
-                    ]
+                        'metadata' => [
+                            'is_tax' => true,
+                        ],
+                    ],
                 ],
                 'quantity' => 1,
             ];
         }
+
+        \Log::info('Valores calculados:', [
+            'subtotal' => $subtotal,
+            'total_tax' => $totalTax,
+            'total' => $subtotal + $totalTax,
+        ]);
     
         return $formattedItems;
     }

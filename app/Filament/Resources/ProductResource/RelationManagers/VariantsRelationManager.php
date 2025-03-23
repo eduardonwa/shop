@@ -58,6 +58,8 @@ class VariantsRelationManager extends RelationManager
                     ->collapsible()
                     ->reorderable()
                     ->extraAttributes(['class' => 'repeater-grid']),
+                TextInput::make('stock')
+                    ->required(),
             ]);
     }
     
@@ -79,6 +81,8 @@ class VariantsRelationManager extends RelationManager
                             return "{$attributeVariant->attribute->key}: {$attributeVariant->value}";
                         })->join(', ') ?? 'No hay atributos';
                     }),
+                TextColumn::make('stock')
+                    ->label('Inventario')
             ])
             ->filters([
                 //

@@ -19,4 +19,26 @@ class ProductVariant extends Model
     {
         return $this->hasMany(AttributeVariant::class);
     }
+
+    public function decreaseStock($quantity)
+    {
+        if ($this->stock >= $quantity) {
+            $this->stock -= $quantity;
+            $this->save();
+
+            if ($this->stock <= 0) {
+                $this->update(['stock' => 0]);
+            }
+
+            // actualiza el stock total del producto
+            $this->product->updateTotalStock();
+        } else {
+            throw new \Exception('No hay suficiente stock disponible.');
+        }
+    }
+
+    public function isAvailable()
+    {
+        return $this->stock > 0;
+    }
 }
