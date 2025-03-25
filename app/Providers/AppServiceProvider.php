@@ -19,6 +19,7 @@ use Illuminate\Support\ServiceProvider;
 use Money\Formatter\IntlMoneyFormatter;
 use Filament\Tables\Actions\CreateAction;
 use App\Actions\Webshop\MigrateSessionCart;
+use Filament\Forms\Components\DateTimePicker;
 use Laravel\Fortify\Http\Requests\LoginRequest;
 
 class AppServiceProvider extends ServiceProvider
@@ -81,9 +82,11 @@ class AppServiceProvider extends ServiceProvider
             return $formattedValue;
         });
 
+        // sucede (por ahora) en los relation managers
         CreateAction::configureUsing(function ($action) {
             return $action->slideOver();
         });
+
         EditAction::configureUsing(function ($action) {
             return $action->slideOver();
         });
