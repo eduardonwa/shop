@@ -11,7 +11,6 @@ class CreateStripeCheckoutSession
 {
     public function createFromCart(Cart $cart)
     {
-
         $coupon = $cart->coupon_code 
             ? Coupon::where('code', $cart->coupon_code)->first()
             : null;
@@ -33,83 +32,88 @@ class CreateStripeCheckoutSession
                     'metadata' => [
                         'user_id' => $cart->user->id,
                         'cart_id' => $cart->id,
+                        'coupon_code' => $coupon?->code,
+                        'discount_type' => $coupon?->discount_type,
+                        'discount_value' => $coupon?->discount_value,
+                        'discount_amount' => $totalDiscount ?? 0
                     ],
                 ]
         );
     }
 
-    private function formatCartItems(Collection $items, $coupon)
+    private function formatCartItems(Collection $items, ?Coupon $coupon)
     {
-        $taxRate = 0.16; // IVA del 16% en México
-        $subtotal = 0; // subtotal sin impuestos
-    
-        $formattedItems = $items->loadMissing('product', 'variant.attributes')->map(function (CartItem $item) use (&$subtotal, $coupon) {
-            $basePrice = $item->product->price->getAmount(); // Precio base en centavos
-            
-            if ($basePrice === null) {
-                throw new \Exception("El precio base del producto no está definido.");
-            }
+        $taxRate = 0.16; // IVA del 16%
+        
+        // 1. Calcular subtotal SIN descuento
+        $subtotalWithoutDiscount = $items->sum(fn($item) => 
+            $item->product->price->getAmount() * $item->quantity
+        );
+        
+        // 2. Aplicar descuento GLOBAL si existe cupón válido
+        $discountedTotal = $coupon && $coupon->isValid() 
+            ? $coupon->applyDiscount($subtotalWithoutDiscount, $subtotalWithoutDiscount)
+            : $subtotalWithoutDiscount;
+        
+        $totalDiscount = $subtotalWithoutDiscount - $discountedTotal;
+        $discountRatio = $subtotalWithoutDiscount > 0 
+            ? $discountedTotal / $subtotalWithoutDiscount 
+            : 1;
 
-            // aplicar descuento si el cupón fue válido para ese producto
-            if ($coupon && $coupon->products->contains($item->product)) {
-                $basePrice = $coupon->applyDiscount($basePrice);
-            }
-
-            $subtotal += $basePrice * $item->quantity; // Acumular total sin impuestos y cupón si aplica
-            
-            // Obtener los atributos de la variante
-            $attributesDescription = $item->variant
-                ? $item->variant->attributes->map(fn($av) => "{$av->attribute->key}: {$av->value}")->implode('/')
-                : 'Producto estándar';
+        // 3. Preparar items con descuento proporcional
+        $formattedItems = $items->loadMissing('product', 'variant.attributes')->map(function (CartItem $item) use ($discountRatio, $coupon) {
+            $basePrice = $item->product->price->getAmount();
+            $discountedPrice = (int) round($basePrice * $discountRatio);
             
             return [
                 'price_data' => [
                     'currency' => 'MXN',
-                    'unit_amount' => $basePrice,
+                    'unit_amount' => $discountedPrice,
                     'product_data' => [
                         'name' => $item->product->name,
-                        'description' => $attributesDescription,
+                        'description' => $item->variant
+                            ? $item->variant->attributes->map(fn($av) => "{$av->attribute->key}: {$av->value}")->implode('/')
+                            : 'Producto estándar',
                         'metadata' => [
                             'product_id' => $item->product->id,
                             'product_variant_id' => $item->product_variant_id,
+                            'original_price' => $basePrice,
+                            'discounted_price' => $discountedPrice,
+                            'discount_per_unit' => $basePrice - $discountedPrice,
+                            'coupon_code' => $coupon?->code
                         ]
                     ]
                 ],
                 'quantity' => $item->quantity,
             ];
         })->toArray();
+
+        // 4. Calcular IVA sobre el total CON descuento
+        $totalTax = (int) round($discountedTotal * $taxRate);
         
-        if ($subtotal < 0) {
-            throw new \Exception("El subtotal no puede ser negativo.");
-        }
-        
-        // 🔥 ahora calculamos el IVA total
-        $totalTax = (int) round($subtotal * $taxRate);
-        
-        // 🔥 agregar línea separada para los impuestos
         if ($totalTax > 0) {
             $formattedItems[] = [
                 'price_data' => [
                     'currency' => 'MXN',
-                    'unit_amount' => $totalTax, // IVA total en centavos
+                    'unit_amount' => $totalTax,
                     'product_data' => [
-                        'name' => 'IVA (16%)', // Nombre visible en el checkout
+                        'name' => 'IVA (16%)',
                         'description' => 'Impuesto al Valor Agregado',
-                        'metadata' => [
-                            'is_tax' => true,
-                        ],
+                        'metadata' => ['is_tax' => true],
                     ],
                 ],
                 'quantity' => 1,
             ];
         }
 
-        \Log::info('Valores calculados:', [
-            'subtotal' => $subtotal,
-            'total_tax' => $totalTax,
-            'total' => $subtotal + $totalTax,
+        \Log::info('Resumen de pago', [
+            'subtotal_sin_descuento' => $subtotalWithoutDiscount / 100,
+            'descuento_total' => $totalDiscount / 100,
+            'subtotal_con_descuento' => $discountedTotal / 100,
+            'iva' => $totalTax / 100,
+            'total' => ($discountedTotal + $totalTax) / 100
         ]);
-    
+
         return $formattedItems;
-    } 
+    }
 }

@@ -65,13 +65,23 @@ class Cart extends Component
         $coupon = Coupon::where('code', $this->cart->coupon_code)->first();
         if (!$coupon || !$coupon->isValid()) return null;
 
+        $subtotal = $this->cart->items->sum(fn($item) =>
+            $item->product->price->getAmount() * $item->quantity
+        );
+
+        $discountAmount = $coupon->discount_type === 'percentage'
+            ? $subtotal * ($coupon->discount_value / 100)
+            : $coupon->discount_value;
+
         return [
             'code' => $coupon->code,
             'type' => $coupon->discount_type,
             'value' => $coupon->discount_value,
+            'amount' => $discountAmount,
             'formatted' => $coupon->discount_type === 'percentage'
                 ? $coupon->discount_value . '%'
-                : '$' . number_format($coupon->discount_value / 100, 2)
+                : '$' . number_format($coupon->discount_value / 100, 2),
+            'amount_formatted' => '$' . number_format($discountAmount / 100, 2)
         ];
     }
 
@@ -81,13 +91,24 @@ class Cart extends Component
         $subtotal = $this->cart->items->sum(fn($item) =>
             $item->product->price->getAmount() * $item->quantity
         );
-        
-        if ($this->discountDetails) {
-            $coupon = Coupon::where('code', $this->cart->coupon_code)->first();
-            return $coupon->applyDiscount($subtotal);
+
+        if (!$this->cart->coupon_code) {
+            return $subtotal;
         }
-    
-        return $subtotal;
+
+        $coupon = Coupon::where('code', $this->cart->coupon_code)->first();
+
+        if (!$coupon || !$coupon->isValid()) {
+            return $subtotal;
+        }
+
+        // aplicar descuento global como en Stripe
+        if ($coupon->discount_type === 'percentage') {
+            return $subtotal * (1 - $coupon->discount_value / 100);
+        }
+
+        // para el descuento fijo
+        return max(0, $subtotal - $coupon->discount_value);
     }
 
     public function removeCoupon()

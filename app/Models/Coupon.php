@@ -50,12 +50,19 @@ class Coupon extends Model
         return true;
     }
 
-    public function applyDiscount($price)
+    public function applyDiscount($price, $context = null)
     {
         if (!$this->isValid()) return $price;
-
-        return $this->discount_type === 'percentage'
-            ? $price * (1 - $this->discount_value / 100)
-            : max(0, $price - $this->discount_value); 
+    
+        if ($this->discount_type === 'percentage') {
+            return $price * (1 - $this->discount_value / 100);
+        }
+        
+        // Para descuento fijo global
+        if ($context) {
+            return max(0, $price - ($this->discount_value * $price / $context));
+        }
+        
+        return max(0, $price - $this->discount_value);
     }
 }

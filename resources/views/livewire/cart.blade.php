@@ -86,7 +86,9 @@
                                 </svg>
                             </button>
                         </td>
-                        <td class="font-medium text-right">-{{ $this->discountDetails['formatted'] }}</td>
+                        <td class="font-medium text-right">
+                            -{{ $this->discountDetails['amount_formatted'] }}
+                        </td>
                         <td></td>
                     </tr>
                 @endif

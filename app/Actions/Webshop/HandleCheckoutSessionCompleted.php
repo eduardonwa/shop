@@ -25,6 +25,12 @@ class HandleCheckoutSessionCompleted
                     'expand' => ['line_items.data.price.product']
                 ]);
 
+                \Log::debug('Stripe Session', [
+                    'total' => $session->amount_total / 100,
+                    'discount' => $session->total_details->amount_discount / 100,
+                    'metadata' => $session->metadata->toArray()
+                ]);
+
                 $totalTax = 0;
                 $subtotal = 0;
 
