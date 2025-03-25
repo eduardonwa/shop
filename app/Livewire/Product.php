@@ -5,7 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\Attributes\Computed;
 use Laravel\Jetstream\InteractsWithBanner;
-use App\Actions\Webshop\AddProductVariantToCart;
+use App\Actions\Webshop\AddProductToCart;
 
 class Product extends Component
 {
@@ -15,7 +15,7 @@ class Product extends Component
     public $variant;
   
     public $rules = [
-        'variant' => ['required', 'exists:App\Models\ProductVariant,id']
+        'variant' => ['nullable', 'exists:App\Models\ProductVariant,id']
     ];
 
     protected function messages() 
@@ -31,11 +31,12 @@ class Product extends Component
         $this->variant = $this->product->variants()->value('id');
     }
 
-    public function addToCart(AddProductVariantToCart $cart)
+    public function addToCart(AddProductToCart $cart)
     {
         $this->validate();
 
         $cart->add(
+            productId: $this->productId,
             variantId: $this->variant
         );
 

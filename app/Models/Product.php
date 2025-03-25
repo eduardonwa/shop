@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Image;
 use App\Casts\MoneyCast;
+use App\Models\CartItem;
 use Spatie\Image\Enums\Fit;
 use App\Models\ProductVariant;
 use Spatie\MediaLibrary\HasMedia;
@@ -43,6 +44,11 @@ class Product extends Model implements HasMedia
         return $this->hasMany(Image::class);
     }
 
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
     // calcular el stock total si el producto tiene "variants"
     public function getTotalStockAttribute()
     {
@@ -57,29 +63,29 @@ class Product extends Model implements HasMedia
 
     public function updateStockFromVariants()
     {
-        if ($this->variants->isNotEmpty()) {
-            // si el producto tiene variantes, el stock total será la suma de las variantes
+        // si el producto tiene variantes, la suma dependerá del stock de las variantes
+        if ($this->variants()->exists()) {
             $this->total_product_stock = $this->variants->sum('total_variant_stock');
-        } else {
-            // si el producto no tiene variantes, el stock total es el valor de total_product_stock
         }
         $this->save();
         // si el stock total es 0, marcar el producto como no publicado 
-        if ($this->total_product_stock === 0) {
+        if ($this->total_product_stock <= 0) {
             $this->update(['is_published' => false]);
         }
     }
 
     public function decreaseStock($quantity)
     {
-        // disminuir el stock del producto
-        $this->total_product_stock -= $quantity;
-        $this->save();
+        // primero verificar si tiene variantes 
+        if ($this->has_variants) {
+            throw new \Exception("Este producto tiene variantes, disminuya el stock de la variante específica");
+        }
 
-        // si el stock total es 0 o menos, el producto está agotado
+        // si no tiene variantes, proceder con la disminución
+        $this->decrement('total_product_stock', $quantity);
+
         if ($this->total_product_stock <= 0) {
             $this->update(['is_published' => false]);
-            // mandarle un mensaje al frontend
         }
     }
 

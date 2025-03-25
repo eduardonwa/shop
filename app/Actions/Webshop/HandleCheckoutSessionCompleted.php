@@ -33,20 +33,19 @@ class HandleCheckoutSessionCompleted
                 $cart = Cart::find($session->metadata->cart_id);
 
                 foreach ($session->line_items->data as $lineItem) {
-                    // Verificar que el producto no sea nulo
+                    
+                    // Verificaciones e impuestos
+                    // 1. Que el producto no sea nulo
                     $product = $lineItem->price->product ?? null;
                     if (!$product) {
                         continue; // Ignorar ítems sin producto
                     }
-
-                    // Verificar que amount_total no sea nulo
+                    // 2. Que amount_total no sea nulo
                     if ($lineItem->amount_total === null) {
                         continue; // Ignorar ítems sin amount_total
                     }
-
-                    // Obtener el id del producto desde los metadatos del precio
+                    // Agregar impuestos
                     $isTax = $product->metadata->is_tax ?? false;
-
                     if ($isTax) {
                         // Sumar el IVA al total
                         $totalTax += $lineItem->amount_total;
@@ -55,25 +54,23 @@ class HandleCheckoutSessionCompleted
 
                     // Sumar al subtotal (solo productos)
                     $subtotal += $lineItem->amount_total;
-
-                    // Obtener el variantId
-                    $variantId = $product->metadata->product_variant_id ?? null;
-                    if (!$variantId) {
-                        continue; // Ignorar ítems sin variant_id
-                    }
-
                     $quantity = $lineItem->quantity;
 
-                    // Disminuir el stock de la variante
-                    $variant = ProductVariant::findOrFail($variantId);
-                    $variant->decreaseStock($quantity);
+                    // Manejar producto con o sin variantes
+                    $variantId = $product->metadata->product_variant_id ?? null;
+                    $productId = $product->mtadata->product_id ?? null;
 
-                    // Actualizar el stock total del producto
-                    $productModel = Product::find($variant->product_id);
-                    $productModel->updateStockFromVariants();
+                    if ($variantId) {
+                        $variant = ProductVariant::findOrFail($variantId);
+                        $variant->decreaseStock($quantity);
+                        $variant->product->updateStockFromVariants();
+                    } elseif ($productId) {
+                        $product = Product::findOrFail($productId);
+                        $product->decrement('total_product_stock', $quantity);
+                    }
                 }
 
-                // Crear la orden
+                // Direcciones para el envío
                 $order = $user->orders()->create([
                     'stripe_checkout_session_id'    => $session->id,
                     'amount_shipping'               => $session->total_details->amount_shipping,
@@ -101,35 +98,94 @@ class HandleCheckoutSessionCompleted
                     ]
                 ]);
 
-                // Procesar los ítems de la orden
+                // Crear una nueva orden con los productos
                 $lineItems = Cashier::stripe()->checkout->sessions->allLineItems($session->id);
+                
+                \Log::debug('LineItems obtenidos de Stripe', ['count' => count($lineItems->all())]);
 
+                $lineItems = Cashier::stripe()->checkout->sessions->allLineItems($session->id);
+                \Log::debug('LineItems obtenidos de Stripe', ['count' => count($lineItems->all())]);
+                
                 $orderItems = collect($lineItems->all())->map(function (LineItem $line) {
-                    $product = Cashier::stripe()->products->retrieve($line->price->product);
-
-                    // Verificar que product_variant_id no sea nulo
-                    if (empty($product->metadata->product_variant_id)) {
-                        return null; // Ignorar ítems sin variant_id
+                    try {
+                        \Log::debug('Procesando LineItem', [
+                            'line_id' => $line->id,
+                            'price_id' => $line->price->id,
+                            'amount_total' => $line->amount_total,
+                            'quantity' => $line->quantity
+                        ]);
+                
+                        $product = Cashier::stripe()->products->retrieve($line->price->product);
+                        \Log::debug('Producto de Stripe', [
+                            'product_id' => $product->id,
+                            'name' => $product->name,
+                            'metadata' => $product->metadata
+                        ]);
+                
+                        // Validación de campos monetarios
+                        $unitAmount = $line->price->unit_amount ?? 0;
+                        $amountTotal = $line->amount_total ?? ($unitAmount * $line->quantity);
+                        $amountDiscount = $line->amount_discount ?? 0;
+                        $amountSubtotal = $line->amount_subtotal ?? ($unitAmount * $line->quantity);
+                        $amountTax = $line->amount_tax ?? 0;
+                
+                        \Log::debug('Valores monetarios validados', [
+                            'unit_amount' => $unitAmount,
+                            'amount_total' => $amountTotal,
+                            'amount_discount' => $amountDiscount,
+                            'amount_subtotal' => $amountSubtotal,
+                            'amount_tax' => $amountTax
+                        ]);
+                
+                        // Obtener IDs de producto/variante
+                        $productId = $product->metadata->product_id ?? null;
+                        $variantId = $product->metadata->product_variant_id ?? null;
+                        \Log::debug('IDs obtenidos', [
+                            'product_id' => $productId,
+                            'variant_id' => $variantId
+                        ]);
+                
+                        // Procesar descripción
+                        $description = 'Ejemplar único';
+                        if ($variantId) {
+                            $variant = ProductVariant::with('attributes')->find($variantId);
+                            if ($variant) {
+                                $description = $variant->attributes->map(function ($av) {
+                                    return "{$av->attribute->key}: {$av->value}";
+                                })->implode(' / ');
+                                \Log::debug('Atributos de variante', ['description' => $description]);
+                            } else {
+                                \Log::warning('Variante no encontrada', ['variant_id' => $variantId]);
+                            }
+                        }
+                
+                        $orderItemData = [
+                            'product_id'            => $variantId ? null : $productId,
+                            'product_variant_id'    => $variantId,
+                            'name'                  => $product->name,
+                            'description'           => $description,
+                            'price'                 => $unitAmount,
+                            'quantity'              => $line->quantity,
+                            'amount_discount'       => $amountDiscount,
+                            'amount_subtotal'       => $amountSubtotal,
+                            'amount_tax'            => $amountTax,
+                            'amount_total'          => $amountTotal,
+                        ];
+                
+                        \Log::debug('Creando OrderItem con datos completos', $orderItemData);
+                        return new OrderItem($orderItemData);
+                
+                    } catch (\Exception $e) {
+                        \Log::error('Error al procesar LineItem', [
+                            'error' => $e->getMessage(),
+                            'line_item' => $line->id ?? null,
+                            'trace' => $e->getTraceAsString()
+                        ]);
+                        return null;
                     }
-
-                    // Obtener la variante y sus atributos
-                    $variant = ProductVariant::with('attributes')->find($product->metadata->product_variant_id);
-                    $attributesDescription = $variant->attributes->map(function ($attributeVariant) {
-                        return "{$attributeVariant->attribute->key}: {$attributeVariant->value}";
-                    })->implode(' / ');
-
-                    return new OrderItem([
-                        'product_variant_id'    => $product->metadata->product_variant_id,
-                        'name'                  => $product->name,
-                        'description'           => $attributesDescription,
-                        'price'                 => $line->price->unit_amount,
-                        'quantity'              => $line->quantity,
-                        'amount_discount'       => $line->amount_discount,
-                        'amount_subtotal'       => $line->amount_subtotal,
-                        'amount_tax'            => $line->amount_tax,
-                        'amount_total'          => $line->amount_total,
-                    ]);
-                })->filter(); // Filtrar elementos nulos
+                })->filter();
+                
+                \Log::info('OrderItems creados exitosamente', ['count' => $orderItems->count()]);
 
                 // Guardar los ítems de la orden
                 $order->items()->saveMany($orderItems);

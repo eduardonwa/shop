@@ -14,7 +14,9 @@
                     <tr>
                         <td>
                             {{ $item->name }} <br>
-                            {{ $item->description }}
+                            @if ($item->description)
+                                <span class="text-sm text-gray-600">{{ $item->description }}</span>
+                            @endif
                         </td>
 
                         <td>{{ $item->quantity }}</td>

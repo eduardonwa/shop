@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Cart;
+use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -16,7 +17,8 @@ return new class extends Migration
         Schema::create('cart_items', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Cart::class)->constrained()->onDelete('cascade');
-            $table->foreignIdFor(ProductVariant::class)->constrained()->onDelete('cascade');
+            $table->foreignIdFor(Product::class)->nullable()->constrained()->onDelete('cascade');
+            $table->foreignIdFor(ProductVariant::class)->nullable()->constrained()->onDelete('cascade');
             $table->unsignedInteger('quantity');
             $table->timestamps();
         });

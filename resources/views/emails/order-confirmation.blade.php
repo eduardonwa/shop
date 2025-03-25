@@ -7,7 +7,7 @@ Thank you for your order. You can find all the details below.
     | Item                                  | Price     | Quantity     | Tax    | Total     |
     | :------------------------------------ |----------:|-------------:|-------:|----------:|
     @foreach($order->items as $item)
-        | **{{ $item->name }}** <br> @foreach ($item->variant->attributes as $attributeVariant) {{ $attributeVariant->attribute->key }}: {{ $attributeVariant->value }} @endforeach | {{ $item->price }} | {{ $item->quantity }} | {{ $item->amount_tax }} | {{ $item->amount_total }} |
+        | **{{ $item->name }}** <br> @if($item->variant) @foreach ($item->variant->attributes as $attributeVariant) {{ $attributeVariant->attribute->key }}: {{ $attributeVariant->value }} @endforeach @else Producto unitario @endif | {{ $item->price }} | {{ $item->quantity }} | {{ $item->amount_tax }} | {{ $item->amount_total }} |
     @endforeach
     @if ($order->amount_shipping->isPositive())
         | | | | **Shipping** | {{ $order->amount_shipping }} |

@@ -20,7 +20,21 @@ class ProductVariant extends Model
         return $this->hasMany(AttributeVariant::class);
     }
 
-    public function decreaseStock($quantity)
+    public function decreaseStock(int $quantity): void
+    {
+        throw_if(
+            $this->total_variant_stock < $quantity,
+            new \RuntimeException('No hay suficiente stock disponible.')
+        );
+    
+        $this->update([
+            'total_variant_stock' => max($this->total_variant_stock - $quantity, 0)
+        ]);
+    
+        $this->product->updateStockFromVariants();
+    }
+
+/*     public function decreaseStock($quantity)
     {
         // Verifica si hay suficiente stock
         if ($this->total_variant_stock < $quantity) {
@@ -40,7 +54,7 @@ class ProductVariant extends Model
     
         // Actualiza el stock total del producto asociado
         $this->product->updateStockFromVariants();
-    }
+    } */
 
     public function isAvailable()
     {

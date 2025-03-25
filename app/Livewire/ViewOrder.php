@@ -17,7 +17,13 @@ class ViewOrder extends Component
     #[Computed]
     public function order()
     {
-        return auth()->user()->orders()->findOrFail($this->orderId);
+        return auth()->user()->orders()
+            ->with([
+                'items.product',
+                'items.variant.attributes.attribute',
+                'items.variant.product'
+            ])
+            ->findOrFail($this->orderId);
     }
 
     public function render()

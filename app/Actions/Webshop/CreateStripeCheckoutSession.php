@@ -47,9 +47,13 @@ class CreateStripeCheckoutSession
             $subtotal += $basePrice * $item->quantity; // Acumular total sin impuestos
             
             // Obtener los atributos de la variante
-            $attributesDescription = $item->variant->attributes->map(function ($attributeVariant) {
+            $attributesDescription = $item->variant
+                ? $item->variant->attributes->map(fn($av) => "{$av->attribute->key}: {$av->value}")->implode('/')
+                : 'Producto estándar';
+
+            /* $attributesDescription = $item->variant->attributes->map(function ($attributeVariant) {
                 return "{$attributeVariant->attribute->key}: {$attributeVariant->value}";
-            })->implode('/');
+            })->implode('/'); */
             
             return [
                 'price_data' => [
@@ -100,7 +104,5 @@ class CreateStripeCheckoutSession
         ]);
     
         return $formattedItems;
-    }
-    
-    
+    } 
 }

@@ -4,11 +4,14 @@ namespace App\Actions\Webshop;
 
 use App\Factories\CartFactory;
 
-class AddProductVariantToCart
+class AddProductToCart
 {
-    public function add($variantId, $quantity = 1, $cart = null)
+    public function add($productId, $variantId = null, $quantity = 1, $cart = null)
     {
-        $item = ($cart ?: CartFactory::make())->items()->firstOrCreate([
+        $cart = $cart ?: CartFactory::make();
+        
+        $item = $cart->items()->firstOrCreate([
+            'product_id' => $productId,
             'product_variant_id' => $variantId,
         ], [
             'quantity' => 0,
