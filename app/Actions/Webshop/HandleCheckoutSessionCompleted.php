@@ -33,7 +33,6 @@ class HandleCheckoutSessionCompleted
                 $cart = Cart::find($session->metadata->cart_id);
 
                 foreach ($session->line_items->data as $lineItem) {
-                    
                     // Verificaciones e impuestos
                     // 1. Que el producto no sea nulo
                     $product = $lineItem->price->product ?? null;

@@ -69,9 +69,33 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="5" class="text-right font-medium">Total</td>
-                    <td class="font-medium text-right">{{ $this->cart->total }}</td>
+                    <td colspan="5" class="text-right font-medium">Subtotal</td>
+                    <td class="font-medium text-right">
+                        ${{ number_format($this->cart->items->sum(fn($item) => $item->product->price->getAmount() * $item->quantity) / 100, 2) }}
+                    </td>
                     <td></td>
+                </tr>
+
+                @if ($this->discountDetails)
+                    <tr class="text-green-600">
+                        <td colspan="5" class="text-right font-medium">
+                            Descuento ({{ $this->discountDetails['code'] }})
+                            <button wire:click="removeCoupon" class="ml-2 text-red-500 hover:text-red-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </td>
+                        <td class="font-medium text-right">-{{ $this->discountDetails['formatted'] }}</td>
+                        <td></td>
+                    </tr>
+                @endif
+
+                <tr>
+                    <td colspan="5" class="text-right font-bold">Total</td>
+                    <td class="font-bold text-right">
+                        ${{ number_format($this->totalWithDiscount / 100, 2) }}
+                    </td>
                 </tr>
             </tfoot>
         </table>
@@ -79,6 +103,16 @@
 
     <div>
         <x-order-panel class="col-span-1">
+
+            @if($this->discountDetails)
+                <div class="mb-4 p-3 bg-green-50 rounded-lg">
+                    <p class="text-green-700 text-sm">
+                        Cupón aplicado: <strong>{{ $this->discountDetails['code'] }}</strong>
+                        <br>Descuento: {{ $this->discountDetails['formatted'] }}
+                    </p>
+                </div>
+            @endif
+
             @guest
                 <p>Porfavor <a href="{{ route('register') }}" class="underline">regístrate</a> o <a href="{{ route('login') }}" class="underline">inicia sesión</a> para continuar</p>
             @endguest

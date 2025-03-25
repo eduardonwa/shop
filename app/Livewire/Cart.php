@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Log;
+use App\Models\Coupon;
 use Livewire\Component;
 use App\Factories\CartFactory;
 use Masmerise\Toaster\Toaster;
@@ -34,6 +35,65 @@ class Cart extends Component
             'items.variant',
             'items.variant.attributes.attribute',
         ]);
+    }
+
+    public function coupon()
+    {
+        return $this->cart->coupon_code
+            ? Coupon::where('code', $this->cart->coupon_code)->first()
+            : null;
+    }
+
+    public function applyCoupon($code)
+    {
+        $coupon = Coupon::where('code', $code)
+            ->whereHas('products', fn($q) => $q->whereIn('id', $this->cart->items->pluck('product_id')))
+            ->first();
+
+        if ($coupon?->isValid()) {
+            $this->cart->update(['coupon_code' => $code]);
+        } else {
+            $this->addError('coupon', 'Cupón no válido o expirado.');
+        }
+    }
+
+    #[Computed]
+    public function discountDetails()
+    {
+        if (!$this->cart->coupon_code) return null;
+
+        $coupon = Coupon::where('code', $this->cart->coupon_code)->first();
+        if (!$coupon || !$coupon->isValid()) return null;
+
+        return [
+            'code' => $coupon->code,
+            'type' => $coupon->discount_type,
+            'value' => $coupon->discount_value,
+            'formatted' => $coupon->discount_type === 'percentage'
+                ? $coupon->discount_value . '%'
+                : '$' . number_format($coupon->discount_value / 100, 2)
+        ];
+    }
+
+    #[Computed]
+    public function totalWithDiscount()
+    {
+        $subtotal = $this->cart->items->sum(fn($item) =>
+            $item->product->price->getAmount() * $item->quantity
+        );
+        
+        if ($this->discountDetails) {
+            $coupon = Coupon::where('code', $this->cart->coupon_code)->first();
+            return $coupon->applyDiscount($subtotal);
+        }
+    
+        return $subtotal;
+    }
+
+    public function removeCoupon()
+    {
+        $this->cart->update(['coupon_code' => null]);
+        $this->dispatch('CartUpdated');
     }
 
     #[Computed]

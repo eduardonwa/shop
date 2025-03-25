@@ -3,7 +3,8 @@
         <div class="bg-white p-5 rounded-lg shadow">
             <img class="mx-auto" src="{{ $this->product->getFirstMediaUrl('featured', 'lg_thumb') }}" alt="Featured Image">
         </div>
-    
+        
+        <!-- imagenes -->
         <div class="grid grid-cols-4 gap-4">
             @foreach ($this->product->getMedia('images') as $image)
                 <div class="rounded bg-white p-2 rounded shadow">
@@ -15,12 +16,59 @@
 
     <div>
         <h1 class="text-3xl font-medium">{{ $this->product->name }}</h1>
-        <div class="text-xl text-gray-700">{{ $this->product->price }}</div>
+        
+        <!-- precio con/sin descuento-->
+        <div class="text-xl text-gray-700">
+            @if($discountApplied)
+                <span class="line-through text-red-500">
+                    ${{ number_format($originalPrice/100) }}
+                </span>
+                <span class="ml-2 text-green-600">
+                    ${{ number_format($finalPrice/100) }}
+                </span>
+                @else
+                    ${{ number_format($originalPrice/100) }}
+            @endif
+        </div>
 
         <div class="mt-4">
             {{ $this->product->description }}
         </div>
-    
+
+        <!-- formulario de cupón -->
+        <div>
+            <form wire:submit.prevent="applyCoupon">
+                <label for="couponCode" class="block text-sm font-medium text-gray-700 mb-1">
+                    Código de descuento
+                </label>
+                <div class="flex">
+                    <input
+                        type="text"
+                        id="couponCode"
+                        wire:model="couponCode"
+                        placeholder="Si tienes un cupón ingresalo aquí"
+                        class="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                    <button
+                        type="submit"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                        Aplicar
+                    </button>
+                </div>
+                @error('couponCode')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+
+                @if ($discountApplied)
+                    <p class="mt-2 text-sm text-green-600">
+                        ¡Cupón aplicado correctamente!
+                    </p>
+                @endif
+            </form>
+        </div>
+        
+        <!-- Selector de variante y checkout -->
         <div class="mt-4 space-y-4">
             @if ($this->product->variants->isNotEmpty())
                 <select wire:model="variant" class="block w-full rounded-md border-0 py-1.5 pr-10 text-gray-800">
@@ -40,7 +88,6 @@
                     {{ $message }}
                 </div>
             @enderror
-
             <x-button wire:click="addToCart"> Add to cart </x-button>
         </div>
     </div>

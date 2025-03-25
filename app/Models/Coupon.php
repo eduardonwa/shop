@@ -45,7 +45,7 @@ class Coupon extends Model
         $now = now();
 
         if ($this->starts_at && $this->starts_at->gt($now)) return false;
-        if ($this->expires_at && $this->expires_at->gt($now)) return false;
+        if ($this->expires_at && $this->expires_at->lt($now)) return false;
         
         return true;
     }

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Coupon;
+use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -58,19 +59,31 @@ class CouponResource extends Resource
                             )
                             ->reactive(),
                         TextInput::make('discount_value')
-                                ->label('Valor')
-                                ->numeric()
-                                ->required()
-                                ->rules([
-                                    function ($get) {
-                                        return function (string $attribute, $value, $fail) use ($get) {
-                                            if ($get('discount_type') === 'percentage' && $value > 100) {
-                                                $fail('El porcentaje no puede ser mayor a 100%');
-                                            }
-                                        };
-                                    }
-                                ])
-                                ->helperText('No necesitas escribir signos'),
+                            ->label('Valor de descuento')
+                            ->numeric()
+                            ->required()
+                            ->rules(['min: 0'])
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($state, Set $set, $get) {
+                                // si es porcentaje, asegurar que no sea mayor a 100
+                                if ($get('discount_type') === 'percentage' && $state > 100) {
+                                    $set('discount_value', 100);
+                                }
+                            })
+                            ->afterStateHydrated(function ($component, $state, $get) {
+                                // convertir centavos a pesos para montos fijos
+                                if ($state && $get('discount_type') === 'fixed') {
+                                    $valueInPesos = $state / 100;
+                                    $component->state(number_format($valueInPesos, 2, '.', ''));                                    
+                                }
+                            })
+                            ->dehydrateStateUsing(function ($state, $get) {
+                                // convertir a centavos si es monto fijo
+                                return $get('discount_type') === 'fixed'
+                                    ? (int) round($state * 100)
+                                    : $state; 
+                            })
+                            ->helperText('No necesitas escribir signos'),
                         DateTimePicker::make('starts_at')
                             ->timezone('America/Hermosillo')
                             ->displayFormat('d-m-Y h:i A')

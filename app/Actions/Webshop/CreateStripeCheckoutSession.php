@@ -3,6 +3,7 @@
 namespace App\Actions\Webshop;
 
 use App\Models\Cart;
+use App\Models\Coupon;
 use App\Models\CartItem;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -10,10 +11,15 @@ class CreateStripeCheckoutSession
 {
     public function createFromCart(Cart $cart)
     {
+
+        $coupon = $cart->coupon_code 
+            ? Coupon::where('code', $cart->coupon_code)->first()
+            : null;
+
         return $cart->user
             ->allowPromotionCodes()
             ->checkout(
-                $this->formatCartItems($cart->items), [
+                $this->formatCartItems($cart->items, $coupon), [
                     'automatic_tax' => ['enabled' => false], // desactivar Stripe Tax
                     'customer_update' => [
                         'shipping' => 'auto',
@@ -32,28 +38,29 @@ class CreateStripeCheckoutSession
         );
     }
 
-    private function formatCartItems(Collection $items)
+    private function formatCartItems(Collection $items, $coupon)
     {
         $taxRate = 0.16; // IVA del 16% en México
         $subtotal = 0; // subtotal sin impuestos
     
-        $formattedItems = $items->loadMissing('product', 'variant.attributes')->map(function (CartItem $item) use (&$subtotal) {
+        $formattedItems = $items->loadMissing('product', 'variant.attributes')->map(function (CartItem $item) use (&$subtotal, $coupon) {
             $basePrice = $item->product->price->getAmount(); // Precio base en centavos
             
             if ($basePrice === null) {
                 throw new \Exception("El precio base del producto no está definido.");
             }
 
-            $subtotal += $basePrice * $item->quantity; // Acumular total sin impuestos
+            // aplicar descuento si el cupón fue válido para ese producto
+            if ($coupon && $coupon->products->contains($item->product)) {
+                $basePrice = $coupon->applyDiscount($basePrice);
+            }
+
+            $subtotal += $basePrice * $item->quantity; // Acumular total sin impuestos y cupón si aplica
             
             // Obtener los atributos de la variante
             $attributesDescription = $item->variant
                 ? $item->variant->attributes->map(fn($av) => "{$av->attribute->key}: {$av->value}")->implode('/')
                 : 'Producto estándar';
-
-            /* $attributesDescription = $item->variant->attributes->map(function ($attributeVariant) {
-                return "{$attributeVariant->attribute->key}: {$attributeVariant->value}";
-            })->implode('/'); */
             
             return [
                 'price_data' => [
