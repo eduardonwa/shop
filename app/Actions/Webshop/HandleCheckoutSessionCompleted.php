@@ -58,7 +58,7 @@ class HandleCheckoutSessionCompleted
 
                     // Manejar producto con o sin variantes
                     $variantId = $product->metadata->product_variant_id ?? null;
-                    $productId = $product->mtadata->product_id ?? null;
+                    $productId = $product->metadata->product_id ?? null;
 
                     if ($variantId) {
                         $variant = ProductVariant::findOrFail($variantId);
