@@ -21,7 +21,8 @@ class ViewOrder extends Component
             ->with([
                 'items.product',
                 'items.variant.attributes.attribute',
-                'items.variant.product'
+                'items.variant.product',
+                'coupon'
             ])
             ->findOrFail($this->orderId);
     }

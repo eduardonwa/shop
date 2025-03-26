@@ -1,7 +1,7 @@
 @component('mail::message')
 Hey {{ $order->user->name }}
 
-Thank you for your order. You can find all the details below.
+Gracias por tu orden. Puedes consultar los detalles a continuación.
 
 @component('mail::table')
     | Item                                  | Price     | Quantity     | Tax    | Total     |
@@ -13,7 +13,7 @@ Thank you for your order. You can find all the details below.
         | | | | **Shipping** | {{ $order->amount_shipping }} |
     @endif
     @if ($order->amount_discount->isPositive())
-        | | | | **Discount** | {{ $order->amount_discount }} |
+        | | | | **Discount** | @if ($order->coupon_code) ({{ $order->coupon_code }}) @endif | {{ $order->amount_discount }} |
     @endif
     @if ($order->amount_tax->isPositive())
         | | | | **Tax** | {{ $order->amount_tax }} |

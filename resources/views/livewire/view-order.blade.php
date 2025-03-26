@@ -38,7 +38,12 @@
 
                 @if ($this->order->amount_discount->isPositive())
                     <tr>
-                        <td colspan="2" class="text-right font-medium">Descuento</td>
+                        <td colspan="2" class="text-right font-medium">
+                            Descuento
+                            @if($this->order->coupon_code)
+                                ({{ $this->order->coupon_code }})
+                            @endif
+                        </td>
                         <td class="font-medium text-right">{{ $this->order->amount_discount }}</td>
                     </tr>
                 @endif

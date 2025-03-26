@@ -70,7 +70,7 @@ class Product extends Model implements HasMedia
         $this->save();
         // si el stock total es 0, marcar el producto como no publicado 
         if ($this->total_product_stock <= 0) {
-            $this->update(['is_published' => false]);
+            $this->update(['published' => false]);
         }
     }
 
@@ -85,7 +85,7 @@ class Product extends Model implements HasMedia
         $this->decrement('total_product_stock', $quantity);
 
         if ($this->total_product_stock <= 0) {
-            $this->update(['is_published' => false]);
+            $this->update(['published' => false]);
         }
     }
 
