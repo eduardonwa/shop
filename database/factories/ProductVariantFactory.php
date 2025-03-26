@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,10 @@ class ProductVariantFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'product_id' => function () {
+                return Product::factory()->create()->id;
+            },
+            'total_variant_stock' => $this->faker->numberBetween(0, 5),
         ];
     }
 }

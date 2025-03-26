@@ -6,8 +6,10 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Image;
 use App\Models\Product;
-use App\Models\AttributeVariant;
+use App\Models\Attribute;
+use App\Models\ProductVariant;
 use Illuminate\Database\Seeder;
+use App\Models\AttributeVariant;
 use Database\Seeders\RoleSeeder;
 use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Factories\Sequence;
@@ -31,24 +33,34 @@ class DatabaseSeeder extends Seeder
 
         $adminUser->assignRole($adminRole);
 
-        /* Product::factory(4)
-            ->hasVariants(5, function (array $attributes, Product $product) {
-                return ['product_id' => $product->id];
-            })
-            ->has(
-                Image::factory(3)
-                    ->sequence(
-                        fn(Sequence $sequence) => [
-                            'featured' => $sequence->index === 0
-                        ]))
+        $colorAttribute = Attribute::factory()->create(['key' => 'Color']);
+        $sizeAttribute = Attribute::factory()->create(['key' => 'Tamaño']);
+
+        $products = Product::factory()
+            ->count(10)
             ->create()
-            ->each(function ($product) {
-                // para cada variante del producto, crear 2 atributos
-                $product->variants->each(function ($variant) {
-                    AttributeVariant::factory(3)->create([
+            ->each(function ($product) use ($colorAttribute, $sizeAttribute) {
+                $variants = ProductVariant::factory()
+                    ->count(rand(2, 5))
+                    ->create(['product_id' => $product->id]);
+
+                $variants->each(function ($variant) use ($colorAttribute, $sizeAttribute) {
+                    AttributeVariant::factory()->create([
                         'product_variant_id' => $variant->id,
+                        'attribute_id' => $colorAttribute->id,
+                        'value' => fake()->colorName(),
+                    ]);
+
+                    AttributeVariant::factory()->create([
+                        'product_variant_id' => $variant->id,
+                        'attribute_id' => $sizeAttribute->id,
+                        'value' => fake()->randomElement(['S', 'M', 'L', 'XL']),
                     ]);
                 });
-            }); */
+
+                $product->update([
+                    'total_product_stock' => $product->variants()->sum('total_variant_stock')
+                ]);
+            });
     }
 }

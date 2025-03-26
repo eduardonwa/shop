@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Attribute;
+use Illuminate\Support\Str;
+use App\Models\ProductVariant;
 use App\Models\AttributeVariant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,15 +21,15 @@ class AttributeVariantFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array
-    {        
-        // Definir posibles pares de clave-valor
-        $attributes = [
-            ['key' => 'color', 'value' => $this->faker->randomElement(['red', 'blue', 'green', 'black'])],
-            ['key' => 'size', 'value' => $this->faker->randomElement(['S', 'M', 'L', 'XL'])],
-            ['key' => 'material', 'value' => $this->faker->randomElement(['cotton', 'polyester', 'wool'])],
-        ];
+    {       
+        $attribute = Attribute::factory()->create([
+            'key' => 'attr_' . Str::random(8) // Clave aleatoria única
+        ]);
 
-        // Seleccionar un par clave-valor aleatorio
-        return $this->faker->randomElement($attributes);
+        return [
+            'product_variant_id' => ProductVariant::factory(),
+            'attribute_id' => $attribute->id,
+            'value' => $this->faker->word, // Valor simple aleatorio
+        ];
     }
 }

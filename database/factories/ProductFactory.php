@@ -16,10 +16,14 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $baseNames = ['Laravel Cap', 'Tshirt', 'Blanket', 'Sweater', 'Hoodie', 'Mug'];
+
         return [
-            'name' => $this->faker->unique()->randomElement(['Laravel Cap', 'Tshirt', 'Blanket', 'Sweater']),
+            'name' => $this->faker->randomElement($baseNames),
             'description' => $this->faker->paragraph(2),
             'price' => $this->faker->numberBetween(5_00, 45_00),
+            'published' => $this->faker->boolean,
+            'total_product_stock' => $this->faker->numberBetween(0, 5),
         ];
     }
 }
