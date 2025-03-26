@@ -73,7 +73,15 @@
             @if ($this->product->variants->isNotEmpty())
                 <select wire:model="variant" class="block w-full rounded-md border-0 py-1.5 pr-10 text-gray-800">
                     @foreach ($this->product->variants as $variant)
-                        <option value="{{ $variant->id }}">
+                        <option value="{{ $variant->id }}"
+                            @if($variant->total_variant_stock == 0) 
+                                disabled
+                                title="Producto agotado"
+                                class="text-red-500 line-through"
+                            @elseif ($variant->is_active == false)
+                                style="display: none;"
+                            @endif
+                        >
                             @foreach ($variant->attributes as $attributeVariant)
                                 {{ $attributeVariant->attribute->key . ':' ?? '' }} {{ $attributeVariant->value }}
                                 @if (!$loop->last) / @endif

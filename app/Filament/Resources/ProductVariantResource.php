@@ -67,6 +67,7 @@ class ProductVariantResource extends Resource
                             }
                         }),
                     TextInput::make('total_variant_stock')
+                        ->label('Unidades')
                         ->numeric(),
                     ])
             ]);
@@ -89,6 +90,13 @@ class ProductVariantResource extends Resource
                     }),
                 TextColumn::make('total_variant_stock')
                     ->label('Inventario')
+                    ->sortable(),
+                TextColumn::make('is_active')
+                    ->label('Estado')
+                    ->sortable()
+                    ->badge()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Activo' : 'Inactivo')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
             ])
             ->filters([
                 //

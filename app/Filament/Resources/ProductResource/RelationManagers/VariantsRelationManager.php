@@ -9,12 +9,14 @@ use App\Models\Attribute;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Columns\TextColumn;
 
 class VariantsRelationManager extends RelationManager
 {
@@ -31,9 +33,28 @@ class VariantsRelationManager extends RelationManager
     {
         return $form
             ->schema([
+                Section::make('Info')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('total_variant_stock')
+                                    ->label('Unidades')
+                                    ->required()
+                                    ->numeric()
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        // si el stock es 0, 'is_active' será false
+                                        $set('is_active', $state != 0);
+                                    }),
+                                Toggle::make('is_active')
+                                    ->label('Estado')
+                                    ->inline(false)
+                                    ->disabled(fn (callable $get) => $get('total_variant_stock') == 0),
+                            ])
+                    ]),
                 Repeater::make('attributes')
-                    ->label('Grupo')
-                    ->relationship('attributes') // Relación con `AttributeVariant`
+                    ->label('Grupo de atributos')
+                    ->relationship('attributes')
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -58,8 +79,6 @@ class VariantsRelationManager extends RelationManager
                     ->collapsible()
                     ->reorderable()
                     ->extraAttributes(['class' => 'repeater-grid']),
-                TextInput::make('total_variant_stock')
-                    ->required(),
             ]);
     }
     
@@ -70,7 +89,8 @@ class VariantsRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('id')
-                    ->label('ID'),
+                    ->label('ID')
+                    ->sortable(),
                 TextColumn::make('attributes.attribute.key')
                     ->label('Atributos')
                     ->searchable()
@@ -83,6 +103,13 @@ class VariantsRelationManager extends RelationManager
                     }),
                 TextColumn::make('total_variant_stock')
                     ->label('Inventario')
+                    ->sortable(),
+                TextColumn::make('is_active')
+                    ->label('Estado')
+                    ->sortable()
+                    ->badge()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Activo' : 'Inactivo')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
             ])
             ->filters([
                 //

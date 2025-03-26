@@ -101,12 +101,19 @@ class ProductResource extends Resource
                                 // Convertir el valor formateado de vuelta a centavos para la base de datos
                                 return (int) round($state * 100);
                             }),
+                        TextInput::make('total_product_stock')
+                            ->label('Unidades')
+                            ->required()
+                            ->numeric()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                // si el stock es 0, 'is_active' será false
+                                $set('published', $state != 0);
+                            }),
                         Toggle::make('published')
                             ->label('Publicar')
-                            ->inline(false),
-                        TextInput::make('total_product_stock')
-                            ->label('Inventario')
-                            ->numeric(),
+                            ->inline()
+                            ->disabled(fn (callable $get) => $get('total_product_stock') == 0),
                 ])->columnSpan([
                     'default' => 1,
                     'sm' => 12,
@@ -134,6 +141,11 @@ class ProductResource extends Resource
                     ->counts('variants'),
                 TextColumn::make('total_product_stock')
                     ->label('Inventario'),
+                TextColumn::make('published')
+                    ->label('Estado')
+                    ->badge()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Activo' : 'Inactivo')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 TextColumn::make('description')
                     ->label('Descripción')
                     ->searchable(),

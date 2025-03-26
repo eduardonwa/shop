@@ -30,7 +30,11 @@ class ProductVariant extends Model
         $this->update([
             'total_variant_stock' => max($this->total_variant_stock - $quantity, 0)
         ]);
-    
+
+        if ($this->total_variant_stock <= 0) {
+            $this->update(['is_active' => false]);
+        }
+        
         $this->product->updateStockFromVariants();
     }
 
