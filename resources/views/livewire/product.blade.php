@@ -14,6 +14,7 @@
         </div>
     </div>
 
+    <!-- info del producto -->
     <div>
         <h1 class="text-3xl font-medium">{{ $this->product->name }}</h1>
         
@@ -35,19 +36,17 @@
             {{ $this->product->description }}
         </div>
 
-{{--         <div class="product-status product-status--{{ $this->product->stock_status }}">
-            @switch($this->product->stock_status)
-                @case('in_stock')
-                    <span class="in-stock">Disponible</span>
-                    @break
-                @case('low_stock')
-                    <span class="low-stock">Últimas unidades</span>
-                    @break
-                @case('sold_out')
-                    <span class="sold-out">Agotado</span>
-                    @break
-            @endswitch
-        </div> --}}
+        <!-- stock disponible -->
+        <div class="mt-2 text-sm {{ $this->availableStock > 0 ? 'text-green-600' : 'text-red-500' }}">
+            @if($this->availableStock > 0)
+                {{ $this->availableStock }} disponibles
+                @if($this->availableStock <= $this->product->low_stock_threshold)
+                    (¡Últimas unidades!)
+                @endif
+            @else
+                Agotado
+            @endif
+        </div>
 
         <!-- formulario de cupón -->
         @unless($this->product->stock_status === 'sold_out')
@@ -113,17 +112,17 @@
                 </div>
             @enderror
 
-            @if($this->product->stock_status === 'sold_out')
-                <x-button disabled class="cursor-not-allowed bg-red-600 hover:bg-red-700 focus:bg-red-700 active:bg-red-600">AGOTADO</x-button>
-            @else
-                <x-button wire:click="addToCart">
-                    @if($this->product->stock_status === 'low_stock')
-                        ¡ÚLTIMAS UNIDADES! COMPRAR
-                    @else
-                        AÑADIR AL CARRITO
-                    @endif
-                </x-button>
-            @endif
+            <!-- boton de compra -->
+            <x-button
+            wire:click="addToCart"
+                :disabled="$this->availableStock < 1"
+            >
+                {{ $this->availableStock > 0 ? 'AÑADIR AL CARRITO' : 'AGOTADO' }}
+            </x-button>
+
+            @error('variant')
+                <p class="mt-2 text-red-500">{{ $message }}</p>
+            @enderror
         </div>
     </div>
 </div>

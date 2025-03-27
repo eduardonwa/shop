@@ -72,6 +72,11 @@ class ProductVariant extends Model
 
     public function isAvailable()
     {
-        return $this->total_variant_stock > 0;
+        return $this->is_active && $this->total_variant_stock > 0;
+    }
+
+    public function canFulfill(int $quantity): bool
+    {
+        return $this->is_active && $this->total_variant_stock >= $quantity;
     }
 }

@@ -9,12 +9,13 @@ use App\Factories\CartFactory;
 use Masmerise\Toaster\Toaster;
 use Masmerise\Toaster\Toastable;
 use Livewire\Attributes\Computed;
+use Laravel\Jetstream\InteractsWithBanner;
 use App\Exceptions\MinimumPurchaseAmountException;
 use App\Actions\Webshop\CreateStripeCheckoutSession;
 
 class Cart extends Component
 {
-    use Toastable;
+    use Toastable, InteractsWithBanner;
     
     public $showError = false;
     public $emptyCart = '';
@@ -23,7 +24,7 @@ class Cart extends Component
 
 
     public $listeners = [
-        'CartUpdated' => '$refresh',
+        'cartUpdated' => '$refresh',
     ];
     
     #[Computed]
@@ -114,7 +115,7 @@ class Cart extends Component
     public function removeCoupon()
     {
         $this->cart->update(['coupon_code' => null]);
-        $this->dispatch('CartUpdated');
+        $this->dispatch('cartUpdated');
     }
 
     #[Computed]
@@ -126,11 +127,34 @@ class Cart extends Component
     public function increment($itemId)
     {
         $item = $this->cart->items()->find($itemId);
-        if ($item) {
-            $item->increment('quantity');
-            $this->dispatch('productAddedToCart');
-            $this->dispatch('CartUpdated');
+    
+        if (!$item) {
+            $this->dangerBanner('Error', 'Ítem no encontrado');
+            return;
         }
+    
+        $maxQuantity = $item->variant
+            ? $item->variant->total_variant_stock
+            : $item->product->total_product_stock;
+        
+        // Calcular cuántas unidades ya están en el carrito (de este mismo item)
+        $inCart = $this->cart->items()
+            ->where('product_id', $item->product_id)
+            ->when($item->product_variant_id, fn($q) => $q->where('product_variant_id', $item->product_variant_id))
+            ->sum('quantity');
+        
+        $available = $maxQuantity - $inCart;
+    
+        if ($available < 1) {
+            $this->dangerBanner(
+                '¡Ups! No hay más unidades disponibles'
+            );
+            return;
+        }
+    
+        $item->increment('quantity');
+        $this->dispatch('productAddedToCart')->self();
+        $this->banner('Cantidad incrementada');
     }
     
     public function decrement($itemId)
@@ -148,7 +172,7 @@ class Cart extends Component
         }
 
         $this->dispatch('productRemovedFromCart');
-        $this->dispatch('CartUpdated');
+        $this->dispatch('cartUpdated');
     }
 
     public function delete($itemId)
@@ -156,7 +180,7 @@ class Cart extends Component
         $this->cart->items()->where('id', $itemId)->delete();
 
         $this->dispatch('productRemovedFromCart');
-        $this->dispatch('CartUpdated');
+        $this->dispatch('cartUpdated');
     }
 
     public function checkout(CreateStripeCheckoutSession $checkoutSession)

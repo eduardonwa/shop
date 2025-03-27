@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Coupon;
 use Livewire\Component;
+use App\Models\ProductVariant;
 use Livewire\Attributes\Computed;
 use App\Actions\Webshop\AddProductToCart;
 use Laravel\Jetstream\InteractsWithBanner;
@@ -65,15 +66,60 @@ class Product extends Component
     public function addToCart(AddProductToCart $cart)
     {
         $this->validate();
+    
+        try {
+            $cart->add(
+                productId: $this->productId,
+                variantId: $this->variant,
+                quantity: 1, // Cantidad a agregar
+                couponCode: $this->discountApplied ? $this->couponCode : null
+            );
+    
+            $this->banner('Producto agregado al carrito');
+            $this->dispatch('productAddedToCart');
+            
+        } catch (\Exception $e) {
+            $this->addError('variant', $e->getMessage());
+            $this->dangerBanner('Error', $e->getMessage());
+        }
+    }
 
-        $cart->add(
-            productId: $this->productId,
-            variantId: $this->variant,
-            couponCode: $this->discountApplied ? $this->couponCode : null
-        );
+    #[Computed]
+    public function selectedVariant()
+    {
+        return $this->variant
+            ? $this->product->variants->firstWhere('id', $this->variant)
+            : null;
+    }
 
-        $this->banner('Tu producto se añadió al carrito.');
-        $this->dispatch('productAddedToCart');
+    #[Computed]
+    public function availableStock()
+    {
+        if ($this->variant) {
+            $variant = ProductVariant::find($this->variant);
+            if (!$variant) return 0;
+            
+            $inCart = auth()->user()->cart?->items()
+                ->where('product_variant_id', $this->variant)
+                ->sum('quantity') ?? 0;
+                
+            return max(0, $variant->total_variant_stock - $inCart);
+        }
+        
+        $inCart = auth()->user()->cart?->items()
+            ->where('product_id', $this->productId)
+            ->whereNull('product_variant_id')
+            ->sum('quantity') ?? 0;
+            
+        return max(0, $this->product->total_product_stock - $inCart);
+    }
+
+    #[Computed]
+    public function maxQuantity()
+    {
+        return $this->selectedVariant
+            ? $this->selectedVariant->total_variant_stock
+            : $this->product->total_product_stock;
     }
 
     #[Computed]

@@ -57,7 +57,6 @@ class Product extends Model implements HasMedia
         return $this->variants()->exists();
     }
     
-    // saca la suma total de unidades dependiendo si hay variantes, por defecto el valor sería "total_product_stock"
     public function getTotalStockAttribute()
     {
         return $this->variants->isNotEmpty() 
@@ -67,14 +66,12 @@ class Product extends Model implements HasMedia
 
     public function updateStockFromVariants()
     {
-        // si el producto tiene variantes, la suma dependerá del stock de las variantes
         if ($this->variants()->exists()) {
             $this->total_product_stock = $this->variants->sum('total_variant_stock');
         }
         $this->save();
     }
 
-    // dependiendo de las unidades actualizar el status
     public function updateStockStatus()
     {
         if ($this->total_product_stock <= 0) {
@@ -98,7 +95,31 @@ class Product extends Model implements HasMedia
         });
     }
 
-    // colecciones, "featured" e "imagenes"
+    public function isAvailable(): bool
+    {
+        return $this->getAvailableStock() > 0;
+    }
+
+    public function getAvailableStock(): int
+    {
+        if ($this->has_variants) {
+            return $this->variants->sum('total_variant_stock');
+        }
+        
+        // Considerar lo ya en el carrito
+        $inCart = auth()->user()->cart?->items()
+            ->where('product_id', $this->id)
+            ->whereNull('product_variant_id')
+            ->sum('quantity') ?? 0;
+            
+        return max(0, $this->total_product_stock - $inCart);
+    }
+
+    public function canFulfill(int $quantity): bool
+    {
+        return $this->getAvailableStock() >= $quantity;
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('featured')
@@ -106,7 +127,6 @@ class Product extends Model implements HasMedia
         $this->addMediaCollection('images');
     }
 
-    // conversiones de imagenes para manejar diferentes tamaños
     public function registerMediaConversions(?Media $media = null): void
     {   
         $this
@@ -132,11 +152,6 @@ class Product extends Model implements HasMedia
     {
         return $this->morphToMany(Coupon::class, 'couponable');
     }
-
-    /* public function collections()
-    {
-        return $this->belongsToMany(ProductCollection::class);
-    } */
 
     public function activeCoupons()
     {
