@@ -121,25 +121,21 @@ class ProductResource extends Resource
                                         TextInput::make('total_product_stock')
                                             ->label('Unidades')
                                             ->numeric()
-                                            ->disabled(function ($get, $record) {
-                                                // deshabilitar si tiene variantes o es un producto nuevo
-                                                return $get('has_variants') || ($record && !$record->exists);
+                                            ->disabled(fn ($get) => $get('has_variants'))
+                                            ->helperText(function ($get, $record) {
+                                                // Mensaje dinámico basado en si tiene variantes o no
+                                                return $get('has_variants') 
+                                                    ? "✅ Tienes variantes, el stock se calcula automáticamente (Total: " . $this->getCurrentStock($record) . " unidades)"
+                                                    : "✏️ Ingresa el número de unidades disponibles";
                                             })
                                             ->reactive()
                                             ->formatStateUsing(function ($state, $record) {
-                                                // Para productos con variantes existentes
-                                                if ($record && $record->exists && $record->has_variants) {
-                                                    return $record->variants->sum('total_variant_stock');
+                                                // Si el producto tiene variantes, mostrar la suma de su stock
+                                                if ($record->variants()->exists()) {
+                                                    return $record->variants()->sum('total_variant_stock');
                                                 }
-                                                // Para productos sin variantes o nuevos
+                                                // Si no tiene variantes, mostrar el valor manual o 0
                                                 return $state ?? 0;
-                                            })
-                                            ->helperText(function ($get, $record) {
-                                                if ($get('has_variants')) {
-                                                    $stockTotal = $record?->exists ? $record->variants->sum('total_variant_stock') : 'Se calculará';
-                                                    return "Stock total calculado: {$stockTotal} unidades (suma de todas las variantes)";
-                                                }
-                                                return 'Ingrese el número de unidades disponibles';
                                             })
                                             ->afterStateUpdated(function ($state, $set, $livewire) {
                                                 $lowStockThreshold = $livewire->record->low_stock_threshold ?? 5;
@@ -192,9 +188,17 @@ class ProductResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('total_product_stock')
+                    ->label('Inventario')
                     ->searchable()
                     ->sortable()
-                    ->label('Inventario'),
+                    ->formatStateUsing(function ($state, $record) {
+                        // Si el producto tiene variantes, suma el stock desde la tabla pivote
+                        if ($record->variants()->exists()) {
+                            return $record->variants()->sum('product_variants.total_variant_stock');
+                        }
+                        // Si no tiene variantes, muestra el valor manual
+                        return $state ?? 0;
+                    }),
                 TextColumn::make('published')
                     ->label('Estado')
                     ->badge()
