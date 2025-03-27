@@ -5,32 +5,44 @@ namespace App\Actions\Webshop;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use Illuminate\Support\Facades\Auth;
 
 class AddProductToCart
 {
-    public function add($productId, $variantId = null, $quantity = 1, $couponCode = null)
+    public function add($productId, $variantId = null, $quantity = 1, $cart = null, $couponCode = null)
     {
         $product = Product::findOrFail($productId);
         $variant = $variantId ? ProductVariant::find($variantId) : null;
-
-        $this->validateStock($product, $variant, $quantity);
-
-        $cart = Cart::firstOrCreate(['user_id' => auth()->id()]);
+        
+        $this->validateStock($product, $variant, $quantity, $cart);
+    
+        // Usar el carrito proporcionado o crear uno nuevo
+        $cart = $cart ?: $this->getOrCreateCart();
+        
         $this->addOrUpdateCartItem($cart, $product, $variant, $quantity);
-
+    
         if ($couponCode) {
             $cart->update(['coupon_code' => $couponCode]);
         }
     }
 
-    protected function validateStock(Product $product, ?ProductVariant $variant, int $quantity): void
+    protected function getOrCreateCart(): Cart
     {
-        $cart = Cart::where('user_id', auth()->id())->first();
+        if (Auth::check()) {
+            return Cart::firstOrCreate(['user_id' => Auth::id()]);
+        }
+        
+        return Cart::firstOrCreate(['session_id' => session()->getId()]);
+    }
+
+    protected function validateStock(Product $product, ?ProductVariant $variant, int $quantity, ?Cart $cart = null): void
+    {
+        $cart = $cart ?: $this->getOrCreateCart();
         
         if ($variant) {
-            $inCart = $cart ? $cart->items()
+            $inCart = $cart->items()
                 ->where('product_variant_id', $variant->id)
-                ->sum('quantity') : 0;
+                ->sum('quantity');
             
             $available = $variant->total_variant_stock - $inCart;
 
@@ -39,10 +51,10 @@ class AddProductToCart
                 new \Exception("No hay suficiente stock. Disponibles: {$available}")
             );
         } else {
-            $inCart = $cart ? $cart->items()
+            $inCart = $cart->items()
                 ->where('product_id', $product->id)
                 ->whereNull('product_variant_id')
-                ->sum('quantity') : 0;
+                ->sum('quantity');
 
             $available = $product->total_product_stock - $inCart;
 

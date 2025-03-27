@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Cart;
 use App\Models\Coupon;
 use Livewire\Component;
 use App\Models\ProductVariant;
@@ -71,7 +72,7 @@ class Product extends Component
             $cart->add(
                 productId: $this->productId,
                 variantId: $this->variant,
-                quantity: 1, // Cantidad a agregar
+                quantity: 1,
                 couponCode: $this->discountApplied ? $this->couponCode : null
             );
     
@@ -95,21 +96,23 @@ class Product extends Component
     #[Computed]
     public function availableStock()
     {
+        $cart = auth()->user()?->cart ?? Cart::where('session_id', session()->getId())->first();
+        
         if ($this->variant) {
             $variant = ProductVariant::find($this->variant);
             if (!$variant) return 0;
             
-            $inCart = auth()->user()->cart?->items()
+            $inCart = $cart ? $cart->items()
                 ->where('product_variant_id', $this->variant)
-                ->sum('quantity') ?? 0;
+                ->sum('quantity') : 0;
                 
             return max(0, $variant->total_variant_stock - $inCart);
         }
         
-        $inCart = auth()->user()->cart?->items()
+        $inCart = $cart ? $cart->items()
             ->where('product_id', $this->productId)
             ->whereNull('product_variant_id')
-            ->sum('quantity') ?? 0;
+            ->sum('quantity') : 0;
             
         return max(0, $this->product->total_product_stock - $inCart);
     }

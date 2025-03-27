@@ -12,18 +12,13 @@ class NavigationCart extends Component
     public $listeners = [
         'productAddedToCart' => '$refresh',
         'productRemovedFromCart' => '$refresh',
-        'cartUpdated' => 'updateCartCount'
+        'cartUpdated' => '$refresh'
     ];
 
     #[Computed]
     public function count()
     {
         return CartFactory::make()->items()->sum('quantity');
-    }
-
-    public function updateCartCount()
-    {
-        $this->dispatch('$refresh');
     }
 
     public function render()
