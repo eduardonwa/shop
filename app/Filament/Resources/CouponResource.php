@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Coupon;
+use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -12,12 +13,9 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Columns\BooleanColumn;
 use Filament\Forms\Components\DateTimePicker;
 use App\Filament\Resources\CouponResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -37,7 +35,7 @@ class CouponResource extends Resource
                     ->schema([
                         TextInput::make('code')
                             ->label('Código')
-                            ->helperText('Este código lo ingresarán los clientes al pagar.')
+                            ->helperText('Este código lo ingresarán los clientes al pagar')
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(32),
@@ -85,18 +83,21 @@ class CouponResource extends Resource
                             })
                             ->helperText('No necesitas escribir signos'),
                         DateTimePicker::make('starts_at')
+                            ->label('Fecha de inicio')
                             ->timezone('America/Hermosillo')
                             ->displayFormat('d-m-Y h:i A')
                             ->format('Y-m-d H:i:s')
                             ->native(false),
                         DateTimePicker::make('expires_at')
+                            ->label('Fecha de expiración')
                             ->timezone('America/Hermosillo')
                             ->displayFormat('d-m-Y h:i A')
                             ->format('Y-m-d H:i:s')
                             ->native(false)
                             ->minDate(fn ($get) => $get('starts_at')),
                         Toggle::make('is_active')
-                            ->label('Estado del cupón')
+                            ->label(fn (Get $get) => $get('is_active') ? 'Desactivar cupón' : 'Activar cupón')
+                            ->live()
                             ->inline(true)
                             ->default(true),
                     ])->columns(2),
