@@ -18,6 +18,8 @@ return new class extends Migration
             $table->unsignedInteger('price');
             $table->boolean('published')->default(false);
             $table->unsignedInteger('total_product_stock')->default(0);
+            $table->enum('stock_status', ['in_stock', 'low_stock', 'sold_out'])->default('in_stock');
+            $table->integer('low_stock_threshold')->default(5);
             $table->timestamps();
         });
     }

@@ -68,10 +68,9 @@ class HandleCheckoutSessionCompleted
                     if ($variantId) {
                         $variant = ProductVariant::findOrFail($variantId);
                         $variant->decreaseStock($quantity);
-                        $variant->product->updateStockFromVariants();
                     } elseif ($productId) {
                         $product = Product::findOrFail($productId);
-                        $product->decrement('total_product_stock', $quantity);
+                        $product->decreaseStock($quantity);
                     }
                 }
 

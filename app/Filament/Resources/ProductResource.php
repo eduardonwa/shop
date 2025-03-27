@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Filament\Support\RawJs;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
@@ -101,19 +102,56 @@ class ProductResource extends Resource
                                 // Convertir el valor formateado de vuelta a centavos para la base de datos
                                 return (int) round($state * 100);
                             }),
-                        TextInput::make('total_product_stock')
-                            ->label('Unidades')
-                            ->required()
-                            ->numeric()
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                // si el stock es 0, 'is_active' será false
-                                $set('published', $state != 0);
-                            }),
-                        Toggle::make('published')
-                            ->label('Publicar')
-                            ->inline()
-                            ->disabled(fn (callable $get) => $get('total_product_stock') == 0),
+                        Section::make('Inventario')
+                            ->schema([
+                                TextInput::make('total_product_stock')
+                                    ->label('Unidades')
+                                    ->numeric()
+                                    ->disabled(function ($get, $record) {
+                                        // deshabilitar si tiene variantes o es un producto nuevo
+                                        return $get('has_variants') || ($record && !$record->exists);
+                                    })
+                                    ->reactive()
+                                    ->formatStateUsing(function ($state, $record) {
+                                        // Para productos con variantes existentes
+                                        if ($record && $record->exists && $record->has_variants) {
+                                            return $record->variants->sum('total_variant_stock');
+                                        }
+                                        // Para productos sin variantes o nuevos
+                                        return $state ?? 0;
+                                    })
+                                    ->helperText(function ($get, $record) {
+                                        if ($get('has_variants')) {
+                                            $stockTotal = $record?->exists ? $record->variants->sum('total_variant_stock') : 'Se calculará';
+                                            return "Stock total calculado: {$stockTotal} unidades (suma de todas las variantes)";
+                                        }
+                                        return 'Ingrese el número de unidades disponibles';
+                                    })
+                                    ->afterStateUpdated(function ($state, $set, $livewire) {
+                                        $lowStockThreshold = $livewire->record->low_stock_threshold ?? 5;
+                                        $newStatus = $state <= 0 ? 'sold_out' :
+                                            ($state <= $lowStockThreshold ? 'low_stock' : 'in_stock');
+                                        $set('stock_status', $newStatus);
+                                    }),
+                                Select::make('stock_status')
+                                    ->label('Estado de inventario')
+                                    ->options([
+                                        'in_stock' => 'Disponible',
+                                        'low_stock' => 'Últimas unidades',
+                                        'sold_out' => 'Agotado',
+                                    ])
+                                    ->required()
+                                    ->reactive(),
+                                TextInput::make('low_stock_threshold')
+                                    ->label('Umbral para bajo stock')
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->default(5),
+                                Toggle::make('published')
+                                    ->label('Publicar en tienda')
+                                    ->inline()
+                                    ->disabled(fn ($get) => $get('stock_status') === 'sold_out'),
+                            ]),
                 ])->columnSpan([
                     'default' => 1,
                     'sm' => 12,
@@ -135,15 +173,21 @@ class ProductResource extends Resource
                     ->searchable(),
                 TextColumn::make('name')
                     ->label('Nombre')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('variants_count')
                     ->label('Variaciones')
-                    ->counts('variants'),
+                    ->counts('variants')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('total_product_stock')
+                    ->searchable()
+                    ->sortable()
                     ->label('Inventario'),
                 TextColumn::make('published')
                     ->label('Estado')
                     ->badge()
+                    ->sortable()
                     ->formatStateUsing(fn (bool $state): string => $state ? 'Activo' : 'Inactivo')
                     ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 TextColumn::make('description')

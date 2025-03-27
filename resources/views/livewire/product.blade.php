@@ -35,6 +35,20 @@
             {{ $this->product->description }}
         </div>
 
+        <div class="product-status product-status--{{ $this->product->stock_status }}">
+            @switch($this->product->stock_status)
+                @case('in_stock')
+                    <span class="in-stock">Disponible</span>
+                    @break
+                @case('low_stock')
+                    <span class="low-stock">Últimas unidades</span>
+                    @break
+                @case('sold_out')
+                    <span class="sold-out">Agotado</span>
+                    @break
+            @endswitch
+        </div>
+
         <!-- formulario de cupón -->
         <div>
             <form wire:submit.prevent="applyCoupon">
@@ -96,7 +110,18 @@
                     {{ $message }}
                 </div>
             @enderror
-            <x-button wire:click="addToCart"> Add to cart </x-button>
+
+            @if($this->product->stock_status === 'sold_out')
+                <button class="btn btn-disabled" disabled>AGOTADO</button>
+            @else
+                <x-button wire:click="addToCart">
+                    @if($this->product->stock_status === 'low_stock')
+                        ¡ÚLTIMAS UNIDADES! COMPRAR
+                    @else
+                        AÑADIR AL CARRITO
+                    @endif
+                </x-button>
+            @endif
         </div>
     </div>
 </div>

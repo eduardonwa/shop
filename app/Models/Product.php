@@ -8,6 +8,7 @@ use App\Models\CartItem;
 use Spatie\Image\Enums\Fit;
 use App\Models\ProductVariant;
 use Spatie\MediaLibrary\HasMedia;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -27,6 +28,8 @@ class Product extends Model implements HasMedia
         'amount_subtotal' => MoneyCast::class,
         'amount_discount' => MoneyCast::class,
         'is_admin' => 'boolean',
+        'stock_status' => 'string',
+        'low_stock_threshold' => 'integer'
     ];
 
     public function variants(): HasMany
@@ -49,16 +52,17 @@ class Product extends Model implements HasMedia
         return $this->hasMany(CartItem::class);
     }
 
-    // calcular el stock total si el producto tiene "variants"
+    public function getHasVariantsAttribute(): bool
+    {
+        return $this->variants()->exists();
+    }
+    
+    // saca la suma total de unidades dependiendo si hay variantes, por defecto el valor sería "total_product_stock"
     public function getTotalStockAttribute()
     {
-        if ($this->variants->isNotEmpty()) {
-            // Si tiene variaciones, sumar el stock de todas las variaciones
-            return $this->variants->sum('total_variant_stock');
-        } else {
-            // Si no tiene variaciones, usar el campo total_stock
-            return $this->total_product_stock;
-        }
+        return $this->variants->isNotEmpty() 
+            ? $this->variants->sum('total_variant_stock') 
+            : $this->total_product_stock;
     }
 
     public function updateStockFromVariants()
@@ -68,25 +72,30 @@ class Product extends Model implements HasMedia
             $this->total_product_stock = $this->variants->sum('total_variant_stock');
         }
         $this->save();
-        // si el stock total es 0, marcar el producto como no publicado 
+    }
+
+    // dependiendo de las unidades actualizar el status
+    public function updateStockStatus()
+    {
         if ($this->total_product_stock <= 0) {
-            $this->update(['published' => false]);
-        }
+            $this->stock_status = 'sold_out';
+         } elseif ($this->total_stock <= $this->low_stock_threshold) {
+            $this->stock_status = 'low_stock';
+         } else {
+            $this->stock_status = 'in_stock';
+         }
+         $this->save();
     }
 
     public function decreaseStock($quantity)
     {
-        // primero verificar si tiene variantes 
-        if ($this->has_variants) {
-            throw new \Exception("Este producto tiene variantes, disminuya el stock de la variante específica");
-        }
-
-        // si no tiene variantes, proceder con la disminución
-        $this->decrement('total_product_stock', $quantity);
-
-        if ($this->total_product_stock <= 0) {
-            $this->update(['published' => false]);
-        }
+        DB::transaction(function () use ($quantity) {
+            if ($this->has_variants) {
+                throw new \Exception("Use decreaseStock en las variantes");
+            }
+            $this->decrement('total_product_stock', $quantity);
+            $this->updateStockStatus();
+        });
     }
 
     // colecciones, "featured" e "imagenes"

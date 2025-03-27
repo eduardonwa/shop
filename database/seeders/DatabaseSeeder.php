@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
 
         $adminUser->assignRole($adminRole);
 
-        $colorAttribute = Attribute::factory()->create(['key' => 'Color']);
+/*         $colorAttribute = Attribute::factory()->create(['key' => 'Color']);
         $sizeAttribute = Attribute::factory()->create(['key' => 'Tamaño']);
 
         $products = Product::factory()
@@ -61,6 +61,6 @@ class DatabaseSeeder extends Seeder
                 $product->update([
                     'total_product_stock' => $product->variants()->sum('total_variant_stock')
                 ]);
-            });
+            }); */
     }
 }
