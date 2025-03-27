@@ -19,7 +19,7 @@ class RemoveInactiveSessionCarts extends Command
      *
      * @var string
      */
-    protected $description = 'Remove inactive session based carts';
+    protected $description = 'Elimina carritos basados en sesiones inactivas';
 
     /**
      * Execute the console command.

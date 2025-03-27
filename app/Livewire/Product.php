@@ -99,7 +99,7 @@ class Product extends Component
         $cart = auth()->user()?->cart ?? Cart::where('session_id', session()->getId())->first();
         
         if ($this->variant) {
-            $variant = ProductVariant::find($this->variant);
+            $variant = $this->selectedVariant();
             if (!$variant) return 0;
             
             $inCart = $cart ? $cart->items()

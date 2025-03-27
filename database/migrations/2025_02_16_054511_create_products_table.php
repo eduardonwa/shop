@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedInteger('total_product_stock')->default(0);
             $table->enum('stock_status', ['in_stock', 'low_stock', 'sold_out'])->default('in_stock');
             $table->integer('low_stock_threshold')->default(5);
+            $table->unsignedBigInteger('cached_quantity_sold')->default(0);
             $table->timestamps();
         });
     }

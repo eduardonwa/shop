@@ -86,21 +86,24 @@
         <!-- Selector de variante y checkout -->
         <div class="mt-4 space-y-4">
             @if ($this->product->variants->isNotEmpty())
-                <select wire:model="variant" class="block w-full rounded-md border-0 py-1.5 pr-10 text-gray-800">
+                <select
+                    wire:model.live="variant"
+                    class="block w-full rounded-md border-0 py-1.5 pr-10 text-gray-800"
+                >
                     @foreach ($this->product->variants as $variant)
                         <option value="{{ $variant->id }}"
                             @if($variant->total_variant_stock == 0) 
                                 disabled
                                 title="Producto agotado"
                                 class="text-red-500 line-through"
-                            @elseif ($variant->is_active == false)
-                                style="display: none;"
                             @endif
+                            @unless($variant->is_active) style="display: none;" @endunless
                         >
                             @foreach ($variant->attributes as $attributeVariant)
                                 {{ $attributeVariant->attribute->key . ':' ?? '' }} {{ $attributeVariant->value }}
                                 @if (!$loop->last) / @endif
                             @endforeach
+                            @if($variant->total_variant_stock == 0) (Agotado) @endif
                         </option>
                     @endforeach
                 </select>
@@ -114,7 +117,7 @@
 
             <!-- boton de compra -->
             <x-button
-            wire:click="addToCart"
+                wire:click="addToCart"
                 :disabled="$this->availableStock < 1"
             >
                 {{ $this->availableStock > 0 ? 'AÑADIR AL CARRITO' : 'AGOTADO' }}

@@ -3,13 +3,17 @@
 namespace App\Providers;
 
 use Money\Money;
+use App\Models\Cart;
 use App\Models\User;
 use NumberFormatter;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Laravel\Cashier\Cashier;
 use Laravel\Fortify\Fortify;
 use App\Factories\CartFactory;
 use Illuminate\Support\Carbon;
+use App\Observers\CartObserver;
+use App\Observers\ProductObserver;
 use Money\Currencies\ISOCurrencies;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Blade;
@@ -82,7 +86,7 @@ class AppServiceProvider extends ServiceProvider
             return $formattedValue;
         });
 
-        // sucede (por ahora) en los relation managers
+        // slide over en vez de modal para crear nueva variante en ProductsResource
         CreateAction::configureUsing(function ($action) {
             return $action->slideOver();
         });
@@ -90,5 +94,8 @@ class AppServiceProvider extends ServiceProvider
         EditAction::configureUsing(function ($action) {
             return $action->slideOver();
         });
+
+        Product::observe(ProductObserver::class);
+        Cart::observe(CartObserver::class);
     }
 }

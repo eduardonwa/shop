@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Application;
 use App\Console\Commands\AbandonedCart;
+use App\Console\Commands\GenerateAnalytics;
 use App\Http\Middleware\CheckAdminRole;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -25,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command(AbandonedCart::class)->dailyAt('13:00');
         // limpiar carritos vacios cada semana
         $schedule->command(RemoveInactiveSessionCarts::class)->weekly();
+        // generar reporte semanal
+        $schedule->command(GenerateAnalytics::class)->dailyAt('23:55');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
