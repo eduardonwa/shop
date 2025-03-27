@@ -12,6 +12,7 @@ use Filament\Support\Colors\Color;
 use Filament\Pages\Auth\EditProfile;
 use Illuminate\Support\Facades\Vite;
 use App\Http\Middleware\CheckAdminRole;
+use Filament\Navigation\NavigationGroup;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Session\Middleware\StartSession;
@@ -45,6 +46,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->pages([
                 Pages\Dashboard::class,
             ])
@@ -67,6 +69,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->navigationGroups([
+                NavigationGroup::make('Productos')
+                    ->label('Tienda')
+                    ->icon('heroicon-o-shopping-cart'),
             ])
             ->sidebarCollapsibleOnDesktop()
             ->profile(

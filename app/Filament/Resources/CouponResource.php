@@ -25,6 +25,18 @@ class CouponResource extends Resource
 {
     protected static ?string $model = Coupon::class;
 
+    protected static ?string $navigationGroup = 'Tienda';
+
+    public static function getModelLabel(): string
+    {
+        return 'Cupón';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Cupones';
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -122,25 +134,28 @@ class CouponResource extends Resource
             ->columns([
                 TextColumn::make('code')
                     ->label('Código')
+                    ->sortable()
                     ->searchable(),
-                TextColumn::make('title')
-                    ->label('Nombre'),
                 TextColumn::make('discount_type')
                     ->label('Tipo')
+                    ->sortable()
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'fixed' => 'Monto fijo',
                         'percentage' => 'Porcentaje',
                         default => $state,
                     }),
                 TextColumn::make('discount_value')
+                    ->sortable()
                     ->label('Valor'),
                 TextColumn::make('is_active')
                     ->label('Estado')
                     ->badge()
+                    ->sortable()
                     ->formatStateUsing(fn (bool $state): string => $state ? 'Activo' : 'Inactivo')
                     ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 TextColumn::make('expires_at')
                     ->label('Expira en')
+                    ->sortable()
                     ->formatStateUsing(fn ($record) => $record->remaining_time)
                     ->description(fn ($record) => $record->expires_at?->timezone('America/Hermosillo')->format('d/m/Y h:i A')),
             ])

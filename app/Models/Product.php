@@ -106,7 +106,7 @@ class Product extends Model implements HasMedia
             return $this->variants->sum('total_variant_stock');
         }
         
-        // Considerar lo ya en el carrito
+        // Considerar lo que ya existe en el carrito
         $inCart = auth()->user()->cart?->items()
             ->where('product_id', $this->id)
             ->whereNull('product_variant_id')

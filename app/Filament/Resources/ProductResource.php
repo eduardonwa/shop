@@ -27,6 +27,8 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
+    protected static ?string $navigationGroup = 'Tienda';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
@@ -122,12 +124,6 @@ class ProductResource extends Resource
                                             ->label('Unidades')
                                             ->numeric()
                                             ->disabled(fn ($get) => $get('has_variants'))
-                                            ->helperText(function ($get, $record) {
-                                                // Mensaje dinámico basado en si tiene variantes o no
-                                                return $get('has_variants') 
-                                                    ? "✅ Tienes variantes, el stock se calcula automáticamente (Total: " . $this->getCurrentStock($record) . " unidades)"
-                                                    : "✏️ Ingresa el número de unidades disponibles";
-                                            })
                                             ->reactive()
                                             ->formatStateUsing(function ($state, $record) {
                                                 // Si el producto tiene variantes, mostrar la suma de su stock
