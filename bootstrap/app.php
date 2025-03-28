@@ -3,13 +3,18 @@
 use Illuminate\Foundation\Application;
 use App\Console\Commands\AbandonedCart;
 use App\Console\Commands\GenerateAnalytics;
-use App\Http\Middleware\CheckAdminRole;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Console\Commands\RemoveInactiveSessionCarts;
 
 return Application::configure(basePath: dirname(__DIR__))
+    ->withProviders()
+    ->withEvents(
+        discover: [
+            __DIR__.'/../app/Listeners',
+        ]
+    )
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
@@ -32,3 +37,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
+
+    foreach (config('events.listen') as $event => $listeners) {
+        foreach ($listeners as $listener) {
+            $app->events->listen($event, $listener);
+        }
+    }

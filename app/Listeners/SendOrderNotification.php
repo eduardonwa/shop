@@ -29,7 +29,7 @@ class SendOrderNotification
         $user = $order->user;
 
         // 1. enviar correo a administrador(es)
-        $admins = User::where('is_admin', true)->get();
+        $admins = User::role('admin')->get();
 
         foreach ($admins as $admin) {
             $admin->notify(new NewOrderNotification($event->order));
