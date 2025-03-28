@@ -19,6 +19,8 @@ class HandleCheckoutSessionCompleted
 {
     public function handle($sessionId)
     {
+        \Log::info('Entrando en HandleCheckoutSessionCompleted con session_id: ' . $sessionId);
+
         DB::transaction(function () use ($sessionId) {
             try {
                 // Recuperar la sesión de Stripe con los ítems
@@ -199,9 +201,7 @@ class HandleCheckoutSessionCompleted
                 $cart->items()->delete();
                 $cart->delete();
 
-                // disparar eventos
-                event(new OrderCreated($order));
-                /* Mail::to($user)->send(new OrderConfirmation($order)); */
+                Mail::to($user)->send(new OrderConfirmation($order));
             } catch (\Exception $e) {
                 // Relanzar la excepción para que la transacción se revierta
                 throw $e;

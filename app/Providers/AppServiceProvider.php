@@ -94,8 +94,5 @@ class AppServiceProvider extends ServiceProvider
         EditAction::configureUsing(function ($action) {
             return $action->slideOver();
         });
-
-        Product::observe(ProductObserver::class);
-        Cart::observe(CartObserver::class);
     }
 }
