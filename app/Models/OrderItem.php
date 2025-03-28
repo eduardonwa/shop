@@ -11,6 +11,13 @@ class OrderItem extends Model
 {
     use HasFactory;
 
+    protected $appends = ['product_name'];
+
+    public function getProductNameAttribute()
+    {
+        return $this->product->name ?? 'Producto eliminado';
+    }
+
     public $casts = [
         'price' => MoneyCast::class,
         'amount_tax' => MoneyCast::class,

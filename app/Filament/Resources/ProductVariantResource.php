@@ -16,10 +16,11 @@ use Filament\Forms\Components\KeyValue;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\ProductVariantResource\Pages;
-use Filament\Forms\Components\ViewField;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
 class ProductVariantResource extends Resource
 {
@@ -106,6 +107,10 @@ class ProductVariantResource extends Resource
     {
         return $table
             ->columns([
+                SpatieMediaLibraryImageColumn::make('product.featured_image')
+                    ->label('Imagen')
+                    ->collection('featured')
+                    ->size(50),
                 TextColumn::make('product.name')
                     ->label('Producto')
                     ->sortable()

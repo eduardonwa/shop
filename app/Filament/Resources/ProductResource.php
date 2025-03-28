@@ -201,9 +201,6 @@ class ProductResource extends Resource
                     ->sortable()
                     ->formatStateUsing(fn (bool $state): string => $state ? 'Activo' : 'Inactivo')
                     ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
-                TextColumn::make('description')
-                    ->label('Descripción')
-                    ->searchable(),
             ])
             ->filters([
                 //
@@ -229,8 +226,8 @@ class ProductResource extends Resource
     {
         return [
             'index' => Pages\ListProducts::route('/'),
-/*             'create' => Pages\CreateProduct::route('/create'),
-            'edit' => Pages\EditProduct::route('/{record}/edit'), */
+            'create' => Pages\CreateProduct::route('/create'),
+            'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
     }
 }

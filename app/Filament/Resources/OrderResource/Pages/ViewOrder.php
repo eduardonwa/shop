@@ -52,10 +52,6 @@ class ViewOrder extends ViewRecord
                                     9 => 'septiembre', 10 => 'octubre', 11 => 'noviembre', 12 => 'diciembre'
                                 ];
                                 return $date->format('d').' de '.$months[$date->month].' del '.$date->format('Y h:i A');
-                            })
-                            ->tooltip(function ($state) {
-                                \Carbon\Carbon::setLocale('es');
-                                return "Hace ".$state->timezone('America/Hermosillo')->diffForHumans();
                             }),
                             
                         TextEntry::make('status')
@@ -97,7 +93,7 @@ class ViewOrder extends ViewRecord
                                     ->width('80px')
                                     ->height('80px'),
                                     
-                                TextEntry::make('product.name')
+                                TextEntry::make('product_name')
                                     ->label('Producto')
                                     ->weight('bold'),
                                     
@@ -114,69 +110,69 @@ class ViewOrder extends ViewRecord
                             ])
                             ->columns(5)
                             ->columnSpanFull(),
-                        Section::make('Dirección de Envío')
-                            ->schema([
-                                TextEntry::make('shipping_address.name')
-                                    ->label('Nombre')
-                                    ->default(fn ($record) => $record->shipping_address['name'] ?? 'N/A'),
-                                    
-                                TextEntry::make('shipping_address.line1')
-                                    ->label('Dirección Línea 1')
-                                    ->default(fn ($record) => $record->shipping_address['line1'] ?? 'N/A'),
-                                    
-                                TextEntry::make('shipping_address.line2')
-                                    ->label('Dirección Línea 2')
-                                    ->default(fn ($record) => $record->shipping_address['line2'] ?? ''),
-                                    
-                                TextEntry::make('shipping_address.city')
-                                    ->label('Ciudad')
-                                    ->default(fn ($record) => $record->shipping_address['city'] ?? 'N/A'),
-                                    
-                                TextEntry::make('shipping_address.state')
-                                    ->label('Estado')
-                                    ->default(fn ($record) => $record->shipping_address['state'] ?? 'N/A'),
-                                    
-                                TextEntry::make('shipping_address.postal_code')
-                                    ->label('Código Postal')
-                                    ->default(fn ($record) => $record->shipping_address['postal_code'] ?? 'N/A'),
-                                    
-                                TextEntry::make('shipping_address.country')
-                                    ->label('País')
-                                    ->default(fn ($record) => $this->getCountryName($record->shipping_address['country'] ?? 'MX')),
-                            ])
-                        ->columns(2),
-                    Section::make('Dirección de Facturación')
-                        ->schema([
-                            TextEntry::make('billing_address.name')
-                                ->label('Nombre')
-                                ->default(fn ($record) => $record->billing_address['name'] ?? 'N/A'),
-                                
-                            TextEntry::make('billing_address.line1')
-                                ->label('Dirección Línea 1')
-                                ->default(fn ($record) => $record->billing_address['line1'] ?? 'N/A'),
-                                
-                            TextEntry::make('billing_address.line2')
-                                ->label('Dirección Línea 2')
-                                ->default(fn ($record) => $record->billing_address['line2'] ?? ''),
-                                
-                            TextEntry::make('billing_address.city')
-                                ->label('Ciudad')
-                                ->default(fn ($record) => $record->billing_address['city'] ?? 'N/A'),
-                                
-                            TextEntry::make('billing_address.state')
-                                ->label('Estado')
-                                ->default(fn ($record) => $record->billing_address['state'] ?? 'N/A'),
-                                
-                            TextEntry::make('billing_address.postal_code')
-                                ->label('Código Postal')
-                                ->default(fn ($record) => $record->billing_address['postal_code'] ?? 'N/A'),
-                                
-                            TextEntry::make('billing_address.country')
-                                ->label('País')
-                                ->default(fn ($record) => $this->getCountryName($record->billing_address['country'] ?? 'MX')),
-                        ])
-                    ->columns(2),
-                ]),
+                        ]),
+                Section::make('Dirección de Envío')
+                    ->schema([
+                        TextEntry::make('shipping_address.name')
+                            ->label('Nombre')
+                            ->default(fn ($record) => $record->shipping_address['name'] ?? 'N/A'),
+                            
+                        TextEntry::make('shipping_address.line1')
+                            ->label('Dirección Línea 1')
+                            ->default(fn ($record) => $record->shipping_address['line1'] ?? 'N/A'),
+                            
+                        TextEntry::make('shipping_address.line2')
+                            ->label('Dirección Línea 2')
+                            ->default(fn ($record) => $record->shipping_address['line2'] ?? ''),
+                            
+                        TextEntry::make('shipping_address.city')
+                            ->label('Ciudad')
+                            ->default(fn ($record) => $record->shipping_address['city'] ?? 'N/A'),
+                            
+                        TextEntry::make('shipping_address.state')
+                            ->label('Estado')
+                            ->default(fn ($record) => $record->shipping_address['state'] ?? 'N/A'),
+                            
+                        TextEntry::make('shipping_address.postal_code')
+                            ->label('Código Postal')
+                            ->default(fn ($record) => $record->shipping_address['postal_code'] ?? 'N/A'),
+                            
+                        TextEntry::make('shipping_address.country')
+                            ->label('País')
+                            ->default(fn ($record) => $this->getCountryName($record->shipping_address['country'] ?? 'MX')),
+                    ])
+                ->columns(2),
+                Section::make('Dirección de Facturación')
+                    ->schema([
+                        TextEntry::make('billing_address.name')
+                            ->label('Nombre')
+                            ->default(fn ($record) => $record->billing_address['name'] ?? 'N/A'),
+                            
+                        TextEntry::make('billing_address.line1')
+                            ->label('Dirección Línea 1')
+                            ->default(fn ($record) => $record->billing_address['line1'] ?? 'N/A'),
+                            
+                        TextEntry::make('billing_address.line2')
+                            ->label('Dirección Línea 2')
+                            ->default(fn ($record) => $record->billing_address['line2'] ?? ''),
+                            
+                        TextEntry::make('billing_address.city')
+                            ->label('Ciudad')
+                            ->default(fn ($record) => $record->billing_address['city'] ?? 'N/A'),
+                            
+                        TextEntry::make('billing_address.state')
+                            ->label('Estado')
+                            ->default(fn ($record) => $record->billing_address['state'] ?? 'N/A'),
+                            
+                        TextEntry::make('billing_address.postal_code')
+                            ->label('Código Postal')
+                            ->default(fn ($record) => $record->billing_address['postal_code'] ?? 'N/A'),
+                            
+                        TextEntry::make('billing_address.country')
+                            ->label('País')
+                            ->default(fn ($record) => $this->getCountryName($record->billing_address['country'] ?? 'MX')),
+                    ])
+                ->columns(2),
             ]);
     }
 }
