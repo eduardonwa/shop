@@ -14,6 +14,7 @@ use App\Models\ProductVariant;
 use App\Mail\OrderConfirmation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Notifications\NewOrderNotification;
 
 class HandleCheckoutSessionCompleted
 {
@@ -202,6 +203,7 @@ class HandleCheckoutSessionCompleted
                 $cart->delete();
 
                 Mail::to($user)->send(new OrderConfirmation($order));
+                $user->notify(new NewOrderNotification($order));
             } catch (\Exception $e) {
                 // Relanzar la excepción para que la transacción se revierta
                 throw $e;

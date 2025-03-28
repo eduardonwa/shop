@@ -27,19 +27,15 @@ class NewOrderNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        return ['database'];
     }
 
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable): MailMessage
+    public function toMail(object $notifiable): ?MailMessage
     {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!')
-                    ->action('Ver orden', url('/admin/'. $this->order->id));
+        return null;
     }
 
     /**
@@ -51,7 +47,8 @@ class NewOrderNotification extends Notification
     {
         return [
             'order_id' => $this->order->id,
-            'amount' => $this->order->total,
+            'message' => 'Tu ordern #'.$this->order->id. ' ha sido recibida',
+            'url' => route('view-order', $this->order->id)
         ];
     }
 }

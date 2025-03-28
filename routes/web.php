@@ -21,4 +21,5 @@ Route::middleware([
     Route::get('/checkout-status', \App\Livewire\CheckoutStatus::class)->name('checkout-status');
     Route::get('/order/{orderId}', \App\Livewire\ViewOrder::class)->name('view-order');
     Route::get('/my-orders', \App\Livewire\MyOrders::class)->name('my-orders');
+    Route::get('/notifications/all', \App\Livewire\NotificationsList::class)->name('notifications');
 });
