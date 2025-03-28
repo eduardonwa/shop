@@ -8,6 +8,7 @@ use App\Models\User;
 use Stripe\LineItem;
 use App\Models\Product;
 use App\Models\OrderItem;
+use App\Events\OrderCreated;
 use Laravel\Cashier\Cashier;
 use App\Models\ProductVariant;
 use App\Mail\OrderConfirmation;
@@ -198,8 +199,9 @@ class HandleCheckoutSessionCompleted
                 $cart->items()->delete();
                 $cart->delete();
 
-                // Enviar correo de confirmación
-                Mail::to($user)->send(new OrderConfirmation($order));
+                // disparar eventos
+                event(new OrderCreated($order));
+                /* Mail::to($user)->send(new OrderConfirmation($order)); */
             } catch (\Exception $e) {
                 // Relanzar la excepción para que la transacción se revierta
                 throw $e;
