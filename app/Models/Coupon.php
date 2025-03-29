@@ -38,12 +38,26 @@ class Coupon extends Model
         return $this->morphedByMany(ProductCollection::class, 'couponable');
     } */
 
+    public function scopeValid($query)
+    {
+        $now = now();
+
+        return $query->where('is_active', true)
+            ->where(function ($query) use ($now) {
+                $query->whereNull('starts_at')
+                      ->orWhere('starts_at', '<=', $now);
+            })
+            ->where(function ($query) use ($now) {
+                $query->whereNull('expires_at')
+                      ->orWhere('expires_at', '>=', $now);
+            });
+    }
+
     public function isValid()
     {
         if (!$this->is_active) return false;
-
+        
         $now = now();
-
         if ($this->starts_at && $this->starts_at->gt($now)) return false;
         if ($this->expires_at && $this->expires_at->lt($now)) return false;
         
@@ -52,17 +66,27 @@ class Coupon extends Model
 
     public function applyDiscount($price, $context = null)
     {
-        if (!$this->isValid()) return $price;
-    
-        if ($this->discount_type === 'percentage') {
-            return $price * (1 - $this->discount_value / 100);
+        if (!$this->valid()) return $price;
+
+        // manejo según tipo de descuento y alcance
+        switch ($this->discount_type) {
+            case 'percentage':
+                return $price * (1 - $this->discount_value / 100);
+            
+            case 'fixed':
+                if ($this->scope === 'product') {
+                    return max(0, $price - $this->discount_value);
+                }
+
+                if ($context && $this->scope === 'cart') {
+                    $proportionalDiscount = ($price / $context) * $this->discount_value;
+                    return max(0, $price - $proportionalDiscount);
+                }
+
+                return max(0, $price - $this->discount_value);
+
+                default:
+                    return $price;
         }
-        
-        // Para descuento fijo global
-        if ($context) {
-            return max(0, $price - ($this->discount_value * $price / $context));
-        }
-        
-        return max(0, $price - $this->discount_value);
     }
 }

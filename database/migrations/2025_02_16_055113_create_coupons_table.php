@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->enum('discount_type', ['percentage', 'fixed']);
             $table->integer('discount_value');
+            $table->enum('scope', ['product', 'cart'])->default('product');
             $table->timestamp('starts_at')->nullable();
             $table->timestamp('expires_at')->nullable();
             $table->boolean('is_active')->default(true);

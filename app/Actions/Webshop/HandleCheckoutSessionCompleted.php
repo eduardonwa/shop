@@ -20,8 +20,6 @@ class HandleCheckoutSessionCompleted
 {
     public function handle($sessionId)
     {
-        \Log::info('Entrando en HandleCheckoutSessionCompleted con session_id: ' . $sessionId);
-
         DB::transaction(function () use ($sessionId) {
             try {
                 // Recuperar la sesión de Stripe con los ítems

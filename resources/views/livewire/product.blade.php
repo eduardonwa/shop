@@ -50,7 +50,10 @@
 
         <!-- formulario de cupón -->
         @unless($this->product->stock_status === 'sold_out')
-            <x-coupon-code-form :discountApplied="$discountApplied" />
+            <livewire:coupon-form 
+                context="product" 
+                :targetId="$productId"
+            />
         @endunless
         
         <!-- Selector de variante y checkout -->

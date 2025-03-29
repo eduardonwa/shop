@@ -21,10 +21,14 @@ class Cart extends Component
     public $emptyCart = '';
     public $minimumAmount = '';
     public $errorMessage = '';
+    //public $cart;
+    public $targetId;
+    public $context;
 
 
     public $listeners = [
         'cartUpdated' => '$refresh',
+        'couponApplied' => 'applyCoupon',
     ];
     
     #[Computed]
@@ -41,50 +45,24 @@ class Cart extends Component
     public function coupon()
     {
         return $this->cart->coupon_code
-            ? Coupon::where('code', $this->cart->coupon_code)->first()
+            ? Coupon::where('code', $this->cart->coupon_code)->valid()->first()
             : null;
     }
 
     public function applyCoupon($code)
     {
         $coupon = Coupon::where('code', $code)
-            ->whereHas('products', fn($q) => $q->whereIn('id', $this->cart->items->pluck('product_id')))
+            ->where('scope', 'cart')
+            ->valid()
             ->first();
-
-        if ($coupon?->isValid()) {
+    
+        if ($coupon) {
             $this->cart->update(['coupon_code' => $code]);
         } else {
             $this->addError('coupon', 'Cupón no válido o expirado.');
         }
     }
 
-    #[Computed]
-    public function discountDetails()
-    {
-        if (!$this->cart->coupon_code) return null;
-
-        $coupon = Coupon::where('code', $this->cart->coupon_code)->first();
-        if (!$coupon || !$coupon->isValid()) return null;
-
-        $subtotal = $this->cart->items->sum(fn($item) =>
-            $item->product->price->getAmount() * $item->quantity
-        );
-
-        $discountAmount = $coupon->discount_type === 'percentage'
-            ? $subtotal * ($coupon->discount_value / 100)
-            : $coupon->discount_value;
-
-        return [
-            'code' => $coupon->code,
-            'type' => $coupon->discount_type,
-            'value' => $coupon->discount_value,
-            'amount' => $discountAmount,
-            'formatted' => $coupon->discount_type === 'percentage'
-                ? $coupon->discount_value . '%'
-                : '$' . number_format($coupon->discount_value / 100, 2),
-            'amount_formatted' => '$' . number_format($discountAmount / 100, 2)
-        ];
-    }
 
     #[Computed]
     public function totalWithDiscount()
@@ -93,23 +71,28 @@ class Cart extends Component
             $item->product->price->getAmount() * $item->quantity
         );
 
-        if (!$this->cart->coupon_code) {
-            return $subtotal;
-        }
+        return $this->coupon()?->applyDiscount($subtotal) ?? $subtotal;
+    }
 
-        $coupon = Coupon::where('code', $this->cart->coupon_code)->first();
+    #[Computed]
+    public function discountDetails()
+    {
+        if (!$coupon = $this->coupon()) return null;
 
-        if (!$coupon || !$coupon->isValid()) {
-            return $subtotal;
-        }
+        $subtotal = $this->cart->items->sum(fn($item) =>
+            $item->product->price->getAmount() * $item->quantity
+        );
 
-        // aplicar descuento global como en Stripe
-        if ($coupon->discount_type === 'percentage') {
-            return $subtotal * (1 - $coupon->discount_value / 100);
-        }
-
-        // para el descuento fijo
-        return max(0, $subtotal - $coupon->discount_value);
+        return [
+            'code' => $coupon->code,
+            'type' => $coupon->discount_type,
+            'value' => $coupon->discount_value,
+            'amount' => $subtotal,
+            'formatted' => $coupon->discount_type === 'percentage'
+                ? $coupon->discount_value . '%'
+                : '$' . number_format($coupon->discount_value / 100, 2),
+            'amount_formatted' => '$' . number_format($subtotal / 100, 2)
+        ];
     }
 
     public function removeCoupon()

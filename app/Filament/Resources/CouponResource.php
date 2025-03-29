@@ -55,6 +55,14 @@ class CouponResource extends Resource
                             ->label('Nombre')
                             ->required()
                             ->maxLength(255),
+                        Select::make('scope')
+                            ->label('Alcance para cupón')
+                            ->options([
+                                'product' => 'Producto',
+                                'cart' => 'Carrito',
+                            ])
+                            ->default('product')
+                            ->required(),
                         Select::make('discount_type')
                             ->label('Tipo')
                             ->options([

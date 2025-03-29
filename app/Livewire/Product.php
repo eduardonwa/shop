@@ -5,7 +5,6 @@ namespace App\Livewire;
 use App\Models\Cart;
 use App\Models\Coupon;
 use Livewire\Component;
-use App\Models\ProductVariant;
 use Livewire\Attributes\Computed;
 use App\Actions\Webshop\AddProductToCart;
 use Laravel\Jetstream\InteractsWithBanner;
@@ -34,6 +33,11 @@ class Product extends Component
         ];
     }
 
+    protected $listeners = [
+        'couponApplied' => 'handleCouponApplied',
+        'productAddedToCart' => 'updateStockInfo'
+    ];
+
     public function mount()
     {
         // obtiene el ID de la primera variante del producto
@@ -44,30 +48,32 @@ class Product extends Component
 
     public function applyCoupon()
     {
-        $this->validate(['couponCode' => 'required|string|max:32']);
+        $this->validate(['couponCode' => 'required|string']);
 
-        // buscar cupón válido para este producto
         $coupon = Coupon::where('code', $this->couponCode)
-            ->whereHas('products', fn($q) => $q->where('products.id', $this->productId))
+            ->whereHas('products', fn($q) => $q->where('id', $this->productId))
+            ->valid()
             ->first();
 
-        if ($coupon && $coupon->isValid()) {
-            $this->discountAmount = $this->originalPrice - $coupon->applyDiscount($this->originalPrice);
-            $this->finalPrice = $this->originalPrice - $this->discountAmount;
+        if ($coupon) {
+            $this->finalPrice = $coupon->applyDiscount($this->originalPrice);
             $this->discountApplied = true;
-            $this->banner('Cupón aplicado correctamente');
+            $this->dispatch('couponApplied', code: $this->couponCode);
         } else {
-            $this->discountApplied = false;
-            $this->finalPrice = $this->originalPrice;
-            $this->discountAmount = 0;
-            $this->addError('couponCode', 'Cupón no válido o expirado.');
+            $this->reset(['couponCode', 'discountApplied']);
         }
+    }
+
+    public function handleCouponApplied($code)
+    {
+        $this->couponCode = $code;
+        $this->discountApplied = true;
     }
 
     public function addToCart(AddProductToCart $cart)
     {
         $this->validate();
-    
+        
         try {
             $cart->add(
                 productId: $this->productId,
@@ -75,13 +81,12 @@ class Product extends Component
                 quantity: 1,
                 couponCode: $this->discountApplied ? $this->couponCode : null
             );
-    
+
             $this->banner('Producto agregado al carrito');
-            $this->dispatch('productAddedToCart');
+            $this->dispatch('productAddedToCart'); // Disparar evento de actualización
             
         } catch (\Exception $e) {
             $this->addError('variant', $e->getMessage());
-            $this->dangerBanner('Error', $e->getMessage());
         }
     }
 

@@ -101,6 +101,12 @@
                 </tr>
             </tfoot>
         </table>
+
+        <livewire:coupon-form 
+            context="cart" 
+            :targetId="$this->cart->id"
+        />
+
     </x-order-panel>
 
     <div>
