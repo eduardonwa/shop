@@ -62,6 +62,7 @@ class Product extends Component
             $this->dispatch('couponApplied', code: $this->couponCode);
         } else {
             $this->reset(['couponCode', 'discountApplied']);
+            $this->finalPrice = $this->originalPrice;
         }
     }
 
@@ -69,6 +70,15 @@ class Product extends Component
     {
         $this->couponCode = $code;
         $this->discountApplied = true;
+
+        $coupon = Coupon::where('code', $this->couponCode)
+            ->whereHas('products', fn($q) => $q->where('products.id', $this->productId))
+            ->valid()
+            ->first();
+
+        if ($coupon) {
+            $this->finalPrice = $coupon->applyDiscount($this->originalPrice);
+        }
     }
 
     public function addToCart(AddProductToCart $cart)

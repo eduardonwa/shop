@@ -87,7 +87,7 @@
                             </button>
                         </td>
                         <td class="font-medium text-right">
-                            -{{ $this->discountDetails['amount_formatted'] }}
+                            -${{ number_format($this->totalWithDiscount() / 100, 2) }}
                         </td>
                         <td></td>
                     </tr>

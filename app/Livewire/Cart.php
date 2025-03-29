@@ -17,12 +17,12 @@ class Cart extends Component
 {
     use Toastable, InteractsWithBanner;
     
-    public $showError = false;
-    public $emptyCart = '';
-    public $minimumAmount = '';
-    public $errorMessage = '';
-    public $targetId;
     public $context;
+    public $emptyCart = '';
+    public $errorMessage = '';
+    public $minimumAmount = '';
+    public $showError = false;
+    public $targetId;
 
     public $listeners = [
         'cartUpdated' => '$refresh',
@@ -50,12 +50,12 @@ class Cart extends Component
     public function applyCoupon($code)
     {
         $coupon = Coupon::where('code', $code)
-            ->where('scope', 'cart')
             ->valid()
             ->first();
     
         if ($coupon) {
             $this->cart->update(['coupon_code' => $code]);
+            $this->dispatch('cartUpdated');
         } else {
             $this->addError('coupon', 'Cupón no válido o expirado.');
         }
@@ -64,11 +64,36 @@ class Cart extends Component
     #[Computed]
     public function totalWithDiscount()
     {
-        $subtotal = $this->cart->items->sum(fn($item) =>
+        $subtotal = $this->cartSubtotal();
+    
+        if ($coupon = $this->coupon()) {
+            // Aplicar descuento según el alcance del cupón
+            if ($coupon->scope === 'cart') {
+                return $coupon->applyDiscount($subtotal);
+            } else {
+                // Si el cupón es para productos individuales, aplicar el descuento a cada producto
+                $total = 0;
+                foreach ($this->cart->items as $item) {
+                    // Buscar si el cupón aplica a este producto
+                    if ($coupon->products->contains($item->product_id)) {
+                        $total += $coupon->applyDiscount($item->product->price->getAmount() * $item->quantity, $subtotal);
+                    } else {
+                        $total += $item->product->price->getAmount() * $item->quantity;
+                    }
+                }
+                return $total;
+            }
+        }
+    
+        return $subtotal;
+    }
+
+    #[Computed]
+    public function cartSubtotal()
+    {
+        return $this->cart->items->sum(fn($item) =>
             $item->product->price->getAmount() * $item->quantity
         );
-
-        return $this->coupon()?->applyDiscount($subtotal) ?? $subtotal;
     }
 
     #[Computed]
