@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Casts\MoneyCast;
 use App\Models\Product;
 use App\Models\Couponable;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +11,6 @@ class Coupon extends Model
     protected $casts = [
         'starts_at' => 'datetime',
         'expires_at' => 'datetime',
-        'discount_value' => MoneyCast::class,
     ];
 
     public function couponables()
@@ -33,6 +31,14 @@ class Coupon extends Model
             ->setTimezone('America/Hermosillo')
             ->diffAsCarbonInterval($this->expires_at->setTimezone('America/Hermosillo'))
             ->forHumans(['short' => true]); // Ej: "1d 5h"
+    }
+
+    public function getFormattedDiscountValueAttribute()
+    {
+        if ($this->discount_type === 'fixed') {
+            return '$' . number_format($this->discount_value / 100);
+        }
+        return $this->discount_value . '%';
     }
 
     /* public function collections()

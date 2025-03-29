@@ -152,10 +152,17 @@ class CouponResource extends Resource
                         'percentage' => 'Porcentaje',
                         default => $state,
                     }),
-                TextColumn::make('discount_value')
+                TextColumn::make('formatted_discount_value')
+                    ->label('Valor')
                     ->searchable()
-                    ->sortable()
-                    ->label('Valor'),
+                    ->sortable(),
+                TextColumn::make('scope')
+                    ->label('Alcance')
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'product' => 'Producto',
+                        'cart' => 'Carrito',
+                        default => $state,
+                    }),
                 TextColumn::make('is_active')
                     ->label('Estado')
                     ->badge()
