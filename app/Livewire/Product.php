@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\Coupon;
 use Livewire\Component;
 use Livewire\Attributes\Computed;
+use Illuminate\Support\Facades\Auth;
 use App\Actions\Webshop\AddProductToCart;
 use Laravel\Jetstream\InteractsWithBanner;
 
@@ -101,7 +102,7 @@ class Product extends Component
     #[Computed]
     public function availableStock()
     {
-        $cart = auth()->user()?->cart ?? Cart::where('session_id', session()->getId())->first();
+        $cart = Auth::user()?->cart ?? Cart::where('session_id', session()->getId())->first();
         
         if ($this->variant) {
             $variant = $this->selectedVariant();

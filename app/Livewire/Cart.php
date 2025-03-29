@@ -21,10 +21,8 @@ class Cart extends Component
     public $emptyCart = '';
     public $minimumAmount = '';
     public $errorMessage = '';
-    //public $cart;
     public $targetId;
     public $context;
-
 
     public $listeners = [
         'cartUpdated' => '$refresh',
@@ -62,7 +60,6 @@ class Cart extends Component
             $this->addError('coupon', 'Cupón no válido o expirado.');
         }
     }
-
 
     #[Computed]
     public function totalWithDiscount()

@@ -3,17 +3,13 @@
 namespace App\Providers;
 
 use Money\Money;
-use App\Models\Cart;
 use App\Models\User;
 use NumberFormatter;
-use App\Models\Product;
 use Illuminate\Http\Request;
 use Laravel\Cashier\Cashier;
 use Laravel\Fortify\Fortify;
 use App\Factories\CartFactory;
 use Illuminate\Support\Carbon;
-use App\Observers\CartObserver;
-use App\Observers\ProductObserver;
 use Money\Currencies\ISOCurrencies;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Blade;
@@ -23,7 +19,6 @@ use Illuminate\Support\ServiceProvider;
 use Money\Formatter\IntlMoneyFormatter;
 use Filament\Tables\Actions\CreateAction;
 use App\Actions\Webshop\MigrateSessionCart;
-use Filament\Forms\Components\DateTimePicker;
 use Laravel\Fortify\Http\Requests\LoginRequest;
 
 class AppServiceProvider extends ServiceProvider

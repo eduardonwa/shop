@@ -22,13 +22,13 @@
         <div class="text-xl text-gray-700">
             @if($discountApplied)
                 <span class="line-through text-red-500">
-                    ${{ number_format($originalPrice/100) }}
+                    ${{ number_format($originalPrice/100, 2) }}
                 </span>
                 <span class="ml-2 text-green-600">
-                    ${{ number_format($finalPrice/100) }}
+                    ${{ number_format($finalPrice/100, 2) }}
                 </span>
                 @else
-                    ${{ number_format($originalPrice/100) }}
+                    ${{ number_format($originalPrice/100, 2) }}
             @endif
         </div>
 
@@ -53,6 +53,7 @@
             <livewire:coupon-form 
                 context="product" 
                 :targetId="$productId"
+                wire:key="coupon-form-{{ $productId }}"
             />
         @endunless
         

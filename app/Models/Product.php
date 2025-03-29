@@ -9,6 +9,7 @@ use Spatie\Image\Enums\Fit;
 use App\Models\ProductVariant;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -107,7 +108,7 @@ class Product extends Model implements HasMedia
         }
         
         // Considerar lo que ya existe en el carrito
-        $inCart = auth()->user()->cart?->items()
+        $inCart = Auth::user()->cart?->items()
             ->where('product_id', $this->id)
             ->whereNull('product_variant_id')
             ->sum('quantity') ?? 0;

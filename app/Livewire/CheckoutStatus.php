@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\Attributes\Computed;
+use Illuminate\Support\Facades\Auth;
 
 class CheckoutStatus extends Component
 {
@@ -17,7 +18,7 @@ class CheckoutStatus extends Component
     #[Computed]
     public function order()
     {
-        return auth()->user()->orders()->where('stripe_checkout_session_id', $this->sessionId)->first();
+        return Auth::user()->orders()->where('stripe_checkout_session_id', $this->sessionId)->first();
     }
 
     public function render()

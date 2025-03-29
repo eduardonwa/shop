@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\Attributes\Computed;
+use Illuminate\Support\Facades\Auth;
 
 class ViewOrder extends Component
 {
@@ -17,7 +18,7 @@ class ViewOrder extends Component
     #[Computed]
     public function order()
     {
-        return auth()->user()->orders()
+        return Auth::user()->orders()
             ->with([
                 'items.product',
                 'items.variant.attributes.attribute',

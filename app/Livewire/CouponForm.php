@@ -26,7 +26,10 @@ class CouponForm extends Component
 
         if ($coupon) {
             $this->discountApplied = true;
-            $this->dispatch('couponApplied', code: $coupon->code);
+            $this->dispatch('couponApplied',
+                code: $coupon->code,
+                finalPrice: $coupon->applyDiscount($this->targetId)
+            );
         } else {
             $this->addError('couponCode', 'Cupón no válido o expirado.');
         }
