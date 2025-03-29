@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use App\Models\Product;
 use App\Models\Couponable;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +12,7 @@ class Coupon extends Model
     protected $casts = [
         'starts_at' => 'datetime',
         'expires_at' => 'datetime',
+        'discount_value' => MoneyCast::class,
     ];
 
     public function couponables()

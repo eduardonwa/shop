@@ -14,8 +14,6 @@ return new class extends Migration
         Schema::create('coupons', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('title');
-            $table->text('description')->nullable();
             $table->enum('discount_type', ['percentage', 'fixed']);
             $table->integer('discount_value');
             $table->enum('scope', ['product', 'cart'])->default('product');

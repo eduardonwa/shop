@@ -51,18 +51,16 @@ class CouponResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(32),
-                        TextInput::make('title')
-                            ->label('Nombre')
-                            ->required()
-                            ->maxLength(255),
                         Select::make('scope')
-                            ->label('Alcance para cupón')
+                            ->label('Alcance')
+                            ->live()
                             ->options([
                                 'product' => 'Producto',
                                 'cart' => 'Carrito',
                             ])
                             ->default('product')
-                            ->required(),
+                            ->required()
+                            ->helperText('Lugar donde el cupón es válido'),
                         Select::make('discount_type')
                             ->label('Tipo')
                             ->options([
@@ -77,7 +75,7 @@ class CouponResource extends Resource
                             )
                             ->reactive(),
                         TextInput::make('discount_value')
-                            ->label('Valor de descuento')
+                            ->label('Valor')
                             ->numeric()
                             ->required()
                             ->rules(['min: 0'])
@@ -131,8 +129,10 @@ class CouponResource extends Resource
                                 ->preload()
                                 ->searchable()
                                 ->optionsLimit(50)
-                                ->maxItems(50),
-                        ]),
+                                ->maxItems(50)
+                                ->hidden(fn (Get $get): bool => $get('scope') !== 'product'),
+                        ])
+                        ->hidden(fn (Get $get): bool => $get('scope') !== 'product'),
             ]);
     }
 
@@ -153,6 +153,7 @@ class CouponResource extends Resource
                         default => $state,
                     }),
                 TextColumn::make('discount_value')
+                    ->searchable()
                     ->sortable()
                     ->label('Valor'),
                 TextColumn::make('is_active')
