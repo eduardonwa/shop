@@ -152,9 +152,14 @@ class CouponResource extends Resource
                         'percentage' => 'Porcentaje',
                         default => $state,
                     }),
-                TextColumn::make('formatted_discount_value')
+                TextColumn::make('discount_value')
                     ->label('Valor')
-                    ->searchable()
+                    ->formatStateUsing(function ($state, $record) {
+                        if ($record->discount_type === 'fixed') {
+                            return '$' . number_format($state / 100);
+                        }
+                        return $state . '%';
+                    })
                     ->sortable(),
                 TextColumn::make('scope')
                     ->label('Alcance')
@@ -162,7 +167,8 @@ class CouponResource extends Resource
                         'product' => 'Producto',
                         'cart' => 'Carrito',
                         default => $state,
-                    }),
+                    })
+                    ->sortable(),
                 TextColumn::make('is_active')
                     ->label('Estado')
                     ->badge()
