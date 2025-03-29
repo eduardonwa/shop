@@ -47,7 +47,7 @@ class NewOrderNotification extends Notification
     {
         return [
             'order_id' => $this->order->id,
-            'message' => 'Tu ordern #'.$this->order->id. ' ha sido recibida',
+            'message' => 'Tu orden #'.$this->order->id. ' ha sido recibida',
             'url' => route('view-order', $this->order->id)
         ];
     }

@@ -173,7 +173,8 @@ class ProductResource extends Resource
                     ->size(50),
                 TextColumn::make('price')
                     ->label('Precio')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->sortable()
