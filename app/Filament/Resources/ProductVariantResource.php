@@ -21,6 +21,7 @@ use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\ProductVariantResource\Pages;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class ProductVariantResource extends Resource
 {
@@ -50,9 +51,10 @@ class ProductVariantResource extends Resource
                     ->schema([
                         Grid::make(1)
                             ->schema([
-                                ViewField::make('featured_image')
+                                SpatieMediaLibraryFileUpload::make('product-variant-image')
                                     ->label('Imagen')
-                                    ->view('components.product-image'),
+                                    ->collection('product-variant-image')
+                                    ->image()
                             ])->columnSpan(1),
 
                         Grid::make(1)
@@ -107,10 +109,13 @@ class ProductVariantResource extends Resource
     {
         return $table
             ->columns([
-                SpatieMediaLibraryImageColumn::make('product.featured_image')
+                SpatieMediaLibraryImageColumn::make('media')
                     ->label('Imagen')
-                    ->collection('featured')
-                    ->size(50),
+                    ->collection('product-variant-image')
+                    ->size(50)
+                    ->extraImgAttributes([
+                        'style' => 'border-radius: 0.5rem;'
+                    ]),
                 TextColumn::make('product.name')
                     ->label('Producto')
                     ->sortable()

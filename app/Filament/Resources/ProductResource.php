@@ -171,7 +171,10 @@ class ProductResource extends Resource
             ->columns([
                 SpatieMediaLibraryImageColumn::make('Imagen')
                     ->collection('featured')
-                    ->size(50),
+                    ->size(50)
+                    ->extraImgAttributes([
+                        'style' => 'border-radius: 0.5rem;'
+                    ]),
                 TextColumn::make('price')
                     ->label('Precio')
                     ->searchable()

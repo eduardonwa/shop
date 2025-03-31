@@ -12,12 +12,13 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class VariantsRelationManager extends RelationManager
 {
@@ -93,9 +94,13 @@ class VariantsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                TextColumn::make('id')
-                    ->label('ID')
-                    ->sortable(),
+                SpatieMediaLibraryImageColumn::make('media')
+                    ->label('Imagen')
+                    ->collection('product-variant-image')
+                    ->size(50)
+                    ->extraImgAttributes([
+                        'style' => 'border-radius: 0.5rem;'
+                    ]),
                 TextColumn::make('attributes.attribute.key')
                     ->label('Atributos')
                     ->searchable()
