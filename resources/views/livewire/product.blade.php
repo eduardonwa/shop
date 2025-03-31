@@ -5,13 +5,13 @@
         </div>
         
         <!-- imagenes -->
-        <div class="flex flex-wrap gap-4">
-            @foreach ($this->allProductImages as $imageUrl)
-                <div class="w-32 h-32">
+        <div class="grid grid-cols-3 gap-4">
+            @foreach ($this->allProductImages as $image)
+                <div class="border rounded overflow-hidden">
                     <img 
-                        src="{{ $imageUrl }}" 
-                        class="w-full h-full object-cover border rounded"
-                        onerror="this.style.display='none'"
+                        src="{{ $image['thumbnail'] }}" 
+                        class="w-full h-32 object-cover"
+                        onerror="this.src='{{ $image['original'] }}'"
                     >
                 </div>
             @endforeach

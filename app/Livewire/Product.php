@@ -157,13 +157,19 @@ class Product extends Component
         
         // 1. colección 'images'
         foreach ($this->product->getMedia('images') as $media) {
-            $images[] = $media->getUrl();
+            $images[] = [
+                'original' => $media->getUrl(),
+                'thumbnail' => $media->getUrl('sm_thumb')
+            ];
         }
         
         // 2. colección 'product-variant-image'
         foreach ($this->product->variants as $variant) {
             if ($media = $variant->getFirstMedia('product-variant-image')) {
-                $images[] = $media->getUrl();
+                $images[] = [
+                    'original' => $media->getUrl(),
+                    'thumbnail' => $media->getUrl('sm_thumb')
+                ];
             }
         }
         
