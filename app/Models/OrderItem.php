@@ -37,6 +37,17 @@ class OrderItem extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function getDisplayImageAttribute()
+    {
+        // Si es una variante y tiene imagen
+        if ($this->product_variant_id && $this->variant) {
+            return $this->variant->getFirstMediaUrl('product-variant-image');
+        }
+        
+        // Si no, usa la imagen del producto principal
+        return $this->product?->image?->path ?? null;
+    }
+
     public function order()
     {
         return $this->belongsTo(Order::class);

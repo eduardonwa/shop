@@ -12,6 +12,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
@@ -50,6 +51,10 @@ class VariantsRelationManager extends RelationManager
                                     ->label('Estado')
                                     ->inline(false)
                                     ->disabled(fn (callable $get) => $get('total_variant_stock') == 0),
+                                SpatieMediaLibraryFileUpload::make('media') // 'media' es el nombre fijo para Spatie
+                                    ->collection('product-variant-image') // Debe coincidir con tu colección
+                                    ->label('Imagen de la variante')
+                                    ->image(),
                             ])
                     ]),
                 Repeater::make('attributes')

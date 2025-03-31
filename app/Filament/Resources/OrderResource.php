@@ -20,7 +20,17 @@ class OrderResource extends Resource
     protected static ?string $model = Order::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    
+    public static function getModelLabel(): string
+    {
+        return 'Orden';
+    }
 
+    public static function getPluralModelLabel(): string
+    {
+        return 'Ordenes';
+    }
+    
     public static function form(Form $form): Form
     {
         return $form

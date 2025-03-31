@@ -88,12 +88,12 @@ class ViewOrder extends ViewRecord
                     ->schema([
                         RepeatableEntry::make('items')
                             ->schema([
-                                ImageEntry::make('product.featured_image')
+                                ImageEntry::make('display_image')
                                     ->label('Imagen')
+                                    ->getStateUsing(fn ($record) => $record->display_image)
                                     ->width('80px')
                                     ->height('80px'),
-                                    
-                                TextEntry::make('product_name')
+                                TextEntry::make('name')
                                     ->label('Producto')
                                     ->weight('bold'),
                                     

@@ -3,13 +3,17 @@
 namespace App\Models;
 
 use App\Models\AttributeVariant;
+use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Support\Facades\DB;
+use App\Models\ImageProductVariant;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class ProductVariant extends Model
+class ProductVariant extends Model implements HasMedia
 {
     use HasFactory;
+    use InteractsWithMedia;
 
     public function product()
     {
@@ -19,6 +23,12 @@ class ProductVariant extends Model
     public function attributes()
     {
         return $this->hasMany(AttributeVariant::class);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('product-variant-image')
+            ->singleFile();
     }
 
     public function decreaseStock(int $quantity): void
