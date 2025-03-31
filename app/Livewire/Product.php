@@ -144,7 +144,10 @@ class Product extends Component
     #[Computed]
     public function product()
     {
-        return \App\Models\Product::with('variants.attributes')->findOrFail($this->productId);
+        return \App\Models\Product::with([
+            'variants.attributes',
+            'variants.media',
+        ])->findOrFail($this->productId);
     }
 
     public function render()

@@ -12,6 +12,19 @@
                 </div>
             @endforeach
         </div>
+
+        <!-- imagenes de las variantes -->
+        @foreach ($this->product->variants as $variant)
+            @if($variant->hasMedia('product-variant-image'))
+                <div class="variant-image relative group">
+                    <img
+                        src="{{ $variant->getFirstMediaUrl('product-variant-image', 'sm_thumb') }}"
+                        alt="Variante {{ $variant->id }}"
+                        class="w-full h-auto rounded"
+                    >
+                </div>
+            @endif
+        @endforeach
     </div>
 
     <!-- info del producto -->

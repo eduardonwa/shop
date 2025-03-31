@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Spatie\Image\Enums\Fit;
 use App\Models\AttributeVariant;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,7 @@ use App\Models\ImageProductVariant;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProductVariant extends Model implements HasMedia
 {
@@ -29,6 +31,21 @@ class ProductVariant extends Model implements HasMedia
     {
         $this->addMediaCollection('product-variant-image')
             ->singleFile();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {   
+        $this
+            ->addMediaConversion('sm_thumb')
+            ->fit(Fit::Contain, 150, 150)
+            ->format('webp')
+            ->nonQueued();
+
+        $this
+            ->addMediaConversion('lg_thumb')
+            ->fit(Fit::Contain, 1080, 1080)
+            ->format('webp')
+            ->nonQueued(); 
     }
 
     public function decreaseStock(int $quantity): void
