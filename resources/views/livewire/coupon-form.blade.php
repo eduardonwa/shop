@@ -20,11 +20,5 @@
         @error('couponCode')
             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
         @enderror
-
-        @if ($discountApplied)
-            <p class="mt-2 text-sm text-green-600">
-                ¡Cupón aplicado correctamente!
-            </p>
-        @endif
     </form>
 </div>

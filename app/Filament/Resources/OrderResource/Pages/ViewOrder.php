@@ -20,12 +20,11 @@ class ViewOrder extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
             Actions\DeleteAction::make(),
             Actions\Action::make('print')
                 ->label('Imprimir')
                 ->icon('heroicon-o-printer')
-                /* ->url(fn () => route('orders.print', $this->record)) */
+                //->url(fn () => route('orders.print', $this->record))
                 ->openUrlInNewTab(),
         ];
     }
@@ -92,7 +91,10 @@ class ViewOrder extends ViewRecord
                                     ->label('Imagen')
                                     ->getStateUsing(fn ($record) => $record->display_image)
                                     ->width('80px')
-                                    ->height('80px'),
+                                    ->height('80px')
+                                    ->extraImgAttributes([
+                                        'style' => 'border-radius: 0.5rem;'
+                                    ]),
                                 TextEntry::make('name')
                                     ->label('Producto')
                                     ->weight('bold'),
@@ -103,10 +105,6 @@ class ViewOrder extends ViewRecord
                                 TextEntry::make('price')
                                     ->label('Precio Unitario')
                                     ->formatStateUsing(fn ($state) => FormatMoney::format($state)),
-                                    
-                                TextEntry::make('total')
-                                    ->label('Total')
-                                    ->formatStateUsing(fn ($state, $record) => FormatMoney::format($record->price * $record->quantity)),
                             ])
                             ->columns(5)
                             ->columnSpanFull(),

@@ -173,8 +173,14 @@ class CouponResource extends Resource
                     ->label('Estado')
                     ->badge()
                     ->sortable()
-                    ->formatStateUsing(fn (bool $state): string => $state ? 'Activo' : 'Inactivo')
-                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
+                    ->formatStateUsing(function ($record) {
+                        $isActive = $record->expires_at ? now()->lt($record->expires_at) : false;
+                        return $isActive ? 'Activo' : 'Inactivo';
+                    })
+                    ->color(function ($record) {
+                        $isActive = $record->expires_at ? now()->lt($record->expires_at) : false;
+                        return $isActive ? 'success' : 'danger';
+                    }),
                 TextColumn::make('expires_at')
                     ->label('Expira en')
                     ->sortable()

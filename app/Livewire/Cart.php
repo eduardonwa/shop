@@ -55,6 +55,7 @@ class Cart extends Component
     
         if ($coupon) {
             $this->cart->update(['coupon_code' => $code]);
+            $this->banner('¡Cupón aplicado correctamente!');
             $this->dispatch('cartUpdated');
         } else {
             $this->addError('coupon', 'Cupón no válido o expirado.');

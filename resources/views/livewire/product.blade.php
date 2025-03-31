@@ -53,7 +53,7 @@
         </div>
 
         <!-- formulario de cupón -->
-        @unless($this->product->stock_status === 'sold_out')
+        @unless($this->product->total_product_stock < 0)
             <livewire:coupon-form 
                 context="product" 
                 :targetId="$productId"
