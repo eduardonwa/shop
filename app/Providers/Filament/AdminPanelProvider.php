@@ -74,15 +74,23 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Productos')
                     ->label('Tienda')
                     ->icon('heroicon-o-shopping-cart'),
+                NavigationGroup::make('Ventas')
+                    ->label('Ventas')
+                    ->icon('heroicon-o-presentation-chart-line')
             ])
             ->sidebarCollapsibleOnDesktop()
+            ->userMenuItems([
+                'profile' => MenuItem::make()->label('Editar perfil'),
+                MenuItem::make()
+                    ->label('Ir al sitio')
+                    ->url('/')
+                    ->openUrlInNewTab()
+                    ->icon('heroicon-o-home'),
+            ])
             ->profile(
                 EditProfile::class,
                 isSimple: false, // editar perfil con la navegacion por un lado
             )
-            ->userMenuItems([
-                'profile' => MenuItem::make()->label('Editar perfil'),
-                'site' => MenuItem::make()->label('Ir al sitio')
-            ]);
+            ->unsavedChangesAlerts(); // alerta de cambios sin guardar
     }
 }

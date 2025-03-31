@@ -127,12 +127,11 @@ class ProductResource extends Resource
                                             ->disabled(fn ($get) => $get('has_variants'))
                                             ->reactive()
                                             ->formatStateUsing(function ($state, $record) {
-                                                // Si el producto tiene variantes, mostrar la suma de su stock
-                                                if ($record->variants()->exists()) {
-                                                    return $record->variants()->sum('total_variant_stock');
+                                                try {
+                                                    return optional($record)->variants?->sum('total_variant_stock') ?? $state ?? 0;
+                                                } catch (\Exception $e) {
+                                                    return 0;
                                                 }
-                                                // Si no tiene variantes, mostrar el valor manual o 0
-                                                return $state ?? 0;
                                             })
                                             ->afterStateUpdated(function ($state, $set, $livewire) {
                                                 $lowStockThreshold = $livewire->record->low_stock_threshold ?? 5;
