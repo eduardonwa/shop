@@ -37,26 +37,33 @@ class VariantsRelationManager extends RelationManager
             ->schema([
                 Section::make('Info')
                     ->schema([
-                        Grid::make(2)
+                        Grid::make(4)
                             ->schema([
-                                TextInput::make('total_variant_stock')
-                                    ->label('Unidades')
-                                    ->required()
-                                    ->numeric()
-                                    ->reactive()
-                                    ->afterStateUpdated(function ($state, callable $set) {
-                                        // si el stock es 0, 'is_active' será false
-                                        $set('is_active', $state != 0);
-                                    }),
-                                Toggle::make('is_active')
-                                    ->label('Estado')
-                                    ->inline(false)
-                                    ->disabled(fn (callable $get) => $get('total_variant_stock') == 0),
-                                SpatieMediaLibraryFileUpload::make('media') // 'media' es el nombre fijo para Spatie
-                                    ->collection('product-variant-image') // Debe coincidir con tu colección
+                                SpatieMediaLibraryFileUpload::make('media')
+                                    ->collection('product-variant-image')
                                     ->label('Imagen de la variante')
-                                    ->image(),
-                            ])
+                                    ->image()
+                                    ->columnSpan(2),
+                                Grid::make(2)
+                                    ->columnSpan(2)
+                                    ->schema([
+                                        TextInput::make('total_variant_stock')
+                                            ->label('Unidades')
+                                            ->required()
+                                            ->numeric()
+                                            ->reactive()
+                                            ->afterStateUpdated(function ($state, callable $set) {
+                                                // si el stock es 0, 'is_active' será false
+                                                $set('is_active', $state != 0);
+                                            }),
+                                        Toggle::make('is_active')
+                                            ->label('Estado')
+                                            ->inline(false)
+                                            ->disabled(fn (callable $get) => $get('total_variant_stock') == 0)
+                                            ->inline()
+                                            ->columnStart(1),
+                                    ]),
+                                ]),
                     ]),
                 Repeater::make('attributes')
                     ->label('Grupo de atributos')
@@ -82,9 +89,10 @@ class VariantsRelationManager extends RelationManager
                                     ->required(),
                            ])
                     ])
+                    ->grid(2)
+                    ->columnSpanFull()
                     ->collapsible()
-                    ->reorderable()
-                    ->extraAttributes(['class' => 'repeater-grid']),
+                    ->reorderable(),
             ]);
     }
     
