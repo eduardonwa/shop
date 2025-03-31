@@ -5,26 +5,17 @@
         </div>
         
         <!-- imagenes -->
-        <div class="grid grid-cols-4 gap-4">
-            @foreach ($this->product->getMedia('images') as $image)
-                <div class="rounded bg-white p-2 rounded shadow">
-                    <img src="{{ $image->getUrl('sm_thumb') }}" class="rounded" alt="">
+        <div class="flex flex-wrap gap-4">
+            @foreach ($this->allProductImages as $imageUrl)
+                <div class="w-32 h-32">
+                    <img 
+                        src="{{ $imageUrl }}" 
+                        class="w-full h-full object-cover border rounded"
+                        onerror="this.style.display='none'"
+                    >
                 </div>
             @endforeach
         </div>
-
-        <!-- imagenes de las variantes -->
-        @foreach ($this->product->variants as $variant)
-            @if($variant->hasMedia('product-variant-image'))
-                <div class="variant-image relative group">
-                    <img
-                        src="{{ $variant->getFirstMediaUrl('product-variant-image', 'sm_thumb') }}"
-                        alt="Variante {{ $variant->id }}"
-                        class="w-full h-auto rounded"
-                    >
-                </div>
-            @endif
-        @endforeach
     </div>
 
     <!-- info del producto -->
@@ -60,9 +51,9 @@
                 Agotado
             @endif
         </div>
-       
+
         <!-- formulario de cupón -->
-        @unless($this->product->total_product_stock <= 0)
+        @unless($this->product->stock_status === 'sold_out')
             <livewire:coupon-form 
                 context="product" 
                 :targetId="$productId"

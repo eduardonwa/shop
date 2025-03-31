@@ -150,6 +150,26 @@ class Product extends Component
         ])->findOrFail($this->productId);
     }
 
+    #[Computed] 
+    public function allProductImages()
+    {
+        $images = [];
+        
+        // 1. colección 'images'
+        foreach ($this->product->getMedia('images') as $media) {
+            $images[] = $media->getUrl();
+        }
+        
+        // 2. colección 'product-variant-image'
+        foreach ($this->product->variants as $variant) {
+            if ($media = $variant->getFirstMedia('product-variant-image')) {
+                $images[] = $media->getUrl();
+            }
+        }
+        
+        return $images;
+    }
+
     public function render()
     {
         return view('livewire.product');

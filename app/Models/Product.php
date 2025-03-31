@@ -149,33 +149,6 @@ class Product extends Model implements HasMedia
             ->nonQueued(); 
     }
 
-    public function getAllImagesAttribute()
-    {
-        $images = collect();
-
-        // imagen principal del producto
-        if ($this->image?->path) {
-            $images->push([
-                'type' => 'product',
-                'path' => $this->image->path,
-                'variant_id' => null
-            ]);
-        }
-
-        // imágenes de las variantes
-        foreach ($this->variants as $variant) {
-            if ($variant->hasMedia('product-variant-image')) {
-                $images->push([
-                    'type' => 'variant',
-                    'path' => $variant->getFirstMediaUrl('product-variant-image', 'sm-thumn'),
-                    'alt' => $variant->attributes->pluck('value')->impplode(' '),
-                ]);
-            }
-        }
-
-        return $images;
-    }
-
     public function coupons()
     {
         return $this->morphToMany(Coupon::class, 'couponable');
