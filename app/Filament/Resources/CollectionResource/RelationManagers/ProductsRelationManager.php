@@ -41,32 +41,47 @@ class ProductsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image.path')->label('Imagen'),
-                Tables\Columns\TextColumn::make('name')->label('Nombre'),
+                TextColumn::make('name')
+                    ->label('Productos'),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->form([
                         ProductSelector::make('selected_products')
-                            ->label('Productos')
+                            ->label('Seleccionar productos')
                             ->required()
                     ])
                     ->action(function (array $data) {
-                        $this->handleRecordCreation($data);
+                        $productIds = is_array($data['selected_products']) 
+                            ? $data['selected_products'] 
+                            : json_decode($data['selected_products'], true) ?? [];
+                        $this->getOwnerRecord()->products()->syncWithoutDetaching($productIds);
                     })
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                Tables\Actions\Action::make('manage_products')
+                    ->label('Gestionar productos')
                     ->form([
                         ProductSelector::make('selected_products')
-                            ->label('Productos')
+                            ->label('Productos en esta colección')
+                            ->default(fn () => $this->getOwnerRecord()->products->pluck('id')->toArray())
                             ->required()
                     ])
-                    ->using(function (array $data, $record) {
-                        $this->handleRecordUpdate($record, $data);
-                    }),
+                    ->action(function (array $data) {
+                        $productIds = is_array($data['selected_products']) 
+                            ? $data['selected_products'] 
+                            : json_decode($data['selected_products'], true) ?? [];
+                        $this->getOwnerRecord()->products()->sync($productIds);
+                    })
+                    ->slideOver()
+                    ->modalHeading('Agregar productos a esta colección'),
                 Tables\Actions\DetachAction::make()
                     ->label('Quitar')
+                    ->hidden(),
+            ])
+            ->bulkActions([
+                Tables\Actions\DetachBulkAction::make()
+                    ->label('Quitar seleccionados')
             ]);
     }
 
