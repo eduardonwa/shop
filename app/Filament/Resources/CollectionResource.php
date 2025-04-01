@@ -2,28 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
 use Filament\Tables;
-use App\Models\Product;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use App\Models\Collection;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
-use App\Filament\Fields\ProductSelector;
-use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Forms\Components\ProductSelect;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CollectionResource\Pages;
-use App\Filament\Resources\CollectionResource\RelationManagers;
 use App\Filament\Resources\CollectionResource\RelationManagers\ProductsRelationManager;
 
 class CollectionResource extends Resource

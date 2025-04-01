@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
 use Filament\Tables;
 use App\Models\Coupon;
 use Filament\Forms\Get;
@@ -15,11 +14,8 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\DateTimePicker;
 use App\Filament\Resources\CouponResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\CouponResource\RelationManagers;
 
 class CouponResource extends Resource
 {
@@ -60,7 +56,7 @@ class CouponResource extends Resource
                             ])
                             ->default('product')
                             ->required()
-                            ->helperText('Lugar donde el cupón es válido'),
+                            ->helperText('Donde tendrá validez el cupón'),
                         Select::make('discount_type')
                             ->label('Tipo')
                             ->options([

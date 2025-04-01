@@ -3,17 +3,13 @@
 namespace App\Filament\Resources;
 
 use Money\Money;
-use Filament\Forms;
 use Filament\Tables;
 use App\Models\Order;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\OrderResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\OrderResource\RelationManagers;
 
 class OrderResource extends Resource
 {
