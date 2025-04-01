@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Product;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
 use App\Models\Collection;
 use Filament\Tables\Table;
@@ -33,40 +34,6 @@ class CollectionResource extends Resource
 
     protected static ?string $navigationGroup = 'Tienda';
 
-    protected static function handleRecordUpdate(Model $record, array $data): Model
-    {
-        // 1. guarda solo los campos directos de la colección
-        $record->update([
-            'name' => $data['name'],
-            'slug' => $data['slug'],
-            'is_active' => $data['is_active'],
-        ]);
-
-        // 2. sincroniza las relaciones en la tabla pivot (collection_product)
-        if (isset($data['products'])) {
-            $record->products()->sync($data['products']);
-        }
-        
-        return $record;
-    }
-
-    protected static function handleRecordCreation(array $data): Model
-    {
-        // 1. crea el registro de la colección (excluyendo 'products')
-        $record = static::getModel()::create([
-            'name' => $data['name'],
-            'slug' => $data['slug'],
-            'is_active' => $data['is_active'],
-        ]);
-
-        // 2. sincroniza las relaciones
-        if (isset($data['products'])) {
-            $record->products()->sync($data['products']);
-        }
-        
-        return $record;
-    }
-
     public static function getModelLabel(): string
     {
         return 'Colección';
@@ -82,6 +49,7 @@ class CollectionResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
+                    ->label('Nombre')
                     ->required()
                     ->maxLength(255)
                     ->live(onBlur: true)
@@ -89,10 +57,14 @@ class CollectionResource extends Resource
                         $set('slug', Str::slug($state));
                     }),
                 TextInput::make('slug')
+                    ->label('Enlace')
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
                 Toggle::make('is_active')
+                    ->label(fn (Get $get) => $get('is_active') ? 'Desactivar' : 'Activar')
+                    ->live()
+                    ->default(true)
                     ->required(),
             ]);
     }

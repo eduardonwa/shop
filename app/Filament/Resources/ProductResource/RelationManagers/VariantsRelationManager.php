@@ -27,7 +27,7 @@ class VariantsRelationManager extends RelationManager
 
     public function getTableHeading(): string
     {
-        return 'Variaciones de atributos';
+        return 'Variaciones de producto';
     }
 
     public function form(Form $form): Form
@@ -94,7 +94,6 @@ class VariantsRelationManager extends RelationManager
                     ->reorderable(),
             ]);
     }
-    
 
     public function table(Table $table): Table
     {
@@ -132,7 +131,8 @@ class VariantsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->label('Crear variación'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -18,6 +18,13 @@ class ProductsRelationManager extends RelationManager
 {
     protected static string $relationship = 'products';
 
+    protected static ?string $modelLabel = 'Colección';
+
+    public function getTableHeading(): string
+    {
+        return 'Productos en esta colección';
+    }
+
     public function form(Form $form): Form
     {
         return $form
@@ -42,10 +49,11 @@ class ProductsRelationManager extends RelationManager
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Productos'),
+                    ->label('Nombre'),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
+                    ->label('Agregar productos')
                     ->form([
                         ProductSelector::make('selected_products')
                             ->label('Seleccionar productos')
