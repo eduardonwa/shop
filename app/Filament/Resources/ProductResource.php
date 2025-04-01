@@ -128,17 +128,21 @@ class ProductResource extends Resource
                                             ->disabled(fn ($get) => $get('has_variants'))
                                             ->reactive()
                                             ->formatStateUsing(function ($state, $record) {
-                                                try {
-                                                    return optional($record)->variants?->sum('total_variant_stock') ?? $state ?? 0;
-                                                } catch (\Exception $e) {
-                                                    return 0;
+                                                // si no tiene variantes, calcula la suma
+                                                if ($record && $record->variants()->exists()) {
+                                                    return $record->variants->sum('total_variant_stock');
                                                 }
+                                                return $state ?? 0;
                                             })
+                                            ->dehydrated(fn ($get) => !$get('has_variants'))
                                             ->afterStateUpdated(function ($state, $set, $livewire) {
                                                 $lowStockThreshold = $livewire->record->low_stock_threshold ?? 5;
                                                 $newStatus = $state <= 0 ? 'sold_out' :
-                                                    ($state <= $lowStockThreshold ? 'low_stock' : 'in_stock');
+                                                            ($state <= $lowStockThreshold ? 'low_stock' : 'in_stock');
                                                 $set('stock_status', $newStatus);
+                                                if ($state > 0) {
+                                                    $set('published', true);
+                                                }
                                             }),
                                         Select::make('stock_status')
                                             ->label('Estado de inventario')
@@ -175,19 +179,14 @@ class ProductResource extends Resource
                     ->extraImgAttributes([
                         'style' => 'border-radius: 0.5rem;'
                     ]),
-                TextColumn::make('price')
-                    ->label('Precio')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('variants_count')
-                    ->label('Variaciones')
-                    ->counts('variants')
-                    ->sortable()
-                    ->searchable(),
+                TextColumn::make('price')
+                    ->label('Precio')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('total_product_stock')
                     ->label('Inventario')
                     ->searchable()
@@ -200,6 +199,10 @@ class ProductResource extends Resource
                         // Si no tiene variantes, muestra el valor manual
                         return $state ?? 0;
                     }),
+                TextColumn::make('variants_count')
+                    ->label('Variaciones')
+                    ->counts('variants')
+                    ->sortable(),
                 TextColumn::make('published')
                     ->label('Estado')
                     ->badge()

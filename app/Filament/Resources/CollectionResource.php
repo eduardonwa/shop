@@ -76,9 +76,20 @@ class CollectionResource extends Resource
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('slug')
+                    ->label('Enlace')
                     ->searchable(),
-                IconColumn::make('is_active')
-                    ->boolean(),
+                TextColumn::make('is_active')
+                    ->label('Estado')
+                    ->badge()
+                    ->sortable()
+                    ->formatStateUsing(function ($record) {
+                        $isActive = $record->is_active;
+                        return $isActive ? 'Activo' : 'Inactivo';
+                    })
+                    ->color(function ($record) {
+                        $isActive = $record->is_active;
+                        return $isActive ? 'success' : 'danger';
+                    }),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
