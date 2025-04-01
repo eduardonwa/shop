@@ -12,6 +12,7 @@ use Filament\Support\Colors\Color;
 use Filament\Pages\Auth\EditProfile;
 use Illuminate\Support\Facades\Vite;
 use App\Http\Middleware\CheckAdminRole;
+use Filament\Forms\Components\Component;
 use Filament\Navigation\NavigationGroup;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Support\Facades\FilamentAsset;
@@ -28,7 +29,7 @@ use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
-    {
+    {        
         $cssPath = Vite::asset('resources/css/app.css');
 
         FilamentAsset::register([

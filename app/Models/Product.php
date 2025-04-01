@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Image;
 use App\Casts\MoneyCast;
 use App\Models\CartItem;
+use App\Models\Collection;
 use Spatie\Image\Enums\Fit;
 use App\Models\ProductVariant;
 use Spatie\MediaLibrary\HasMedia;
@@ -51,6 +52,11 @@ class Product extends Model implements HasMedia
     public function cartItems()
     {
         return $this->hasMany(CartItem::class);
+    }
+
+    public function collections()
+    {
+        return $this->belongsToMany(Collection::class);
     }
 
     public function getHasVariantsAttribute(): bool

@@ -14,7 +14,6 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
@@ -35,7 +34,7 @@ class VariantsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Section::make('Info')
+                Section::make('Información')
                     ->schema([
                         Grid::make(4)
                             ->schema([

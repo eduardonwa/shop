@@ -52,6 +52,7 @@ class ProductResource extends Resource
                             ->maxSize(3000)
                             ->collection('featured')
                             ->image()
+                            ->required()
                             ->columnSpanFull(),
                         SpatieMediaLibraryFileUpload::make('images')
                             ->label('Imagenes')
