@@ -140,14 +140,6 @@ class CouponResource extends Resource
                     ->label('Código')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('discount_type')
-                    ->label('Tipo')
-                    ->sortable()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'fixed' => 'Monto fijo',
-                        'percentage' => 'Porcentaje',
-                        default => $state,
-                    }),
                 TextColumn::make('discount_value')
                     ->label('Valor')
                     ->formatStateUsing(function ($state, $record) {
@@ -165,6 +157,11 @@ class CouponResource extends Resource
                         default => $state,
                     })
                     ->sortable(),
+                TextColumn::make('expires_at')
+                    ->label('Expira en')
+                    ->sortable()
+                    ->formatStateUsing(fn ($record) => $record->remaining_time)
+                    ->description(fn ($record) => $record->expires_at?->timezone('America/Hermosillo')->format('d/m/Y h:i A')),
                 TextColumn::make('is_active')
                     ->label('Estado')
                     ->badge()
@@ -177,11 +174,6 @@ class CouponResource extends Resource
                         $isActive = $record->expires_at ? now()->lt($record->expires_at) : false;
                         return $isActive ? 'success' : 'danger';
                     }),
-                TextColumn::make('expires_at')
-                    ->label('Expira en')
-                    ->sortable()
-                    ->formatStateUsing(fn ($record) => $record->remaining_time)
-                    ->description(fn ($record) => $record->expires_at?->timezone('America/Hermosillo')->format('d/m/Y h:i A')),
             ])
             ->filters([
                 //

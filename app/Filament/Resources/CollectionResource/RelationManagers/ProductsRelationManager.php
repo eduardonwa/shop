@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CollectionResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Product;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Arr;
@@ -13,6 +14,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -48,8 +50,24 @@ class ProductsRelationManager extends RelationManager
     {
         return $table
             ->columns([
+                SpatieMediaLibraryImageColumn::make('media')
+                    ->label('Imagen')
+                    ->collection('featured')
+                    ->size(50)
+                    ->extraImgAttributes([
+                        'style' => 'border-radius: 0.5rem;'
+                    ]),
                 TextColumn::make('name')
                     ->label('Nombre'),
+                TextColumn::make('total_stock')
+                    ->label('Inventario')
+                    ->sortable(),
+                TextColumn::make('published')
+                    ->label('Estado')
+                    ->sortable()
+                    ->badge()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Activo' : 'Inactivo')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()

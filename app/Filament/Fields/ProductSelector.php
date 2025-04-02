@@ -3,52 +3,13 @@
 namespace App\Filament\Fields;
 
 use App\Models\Product;
+use App\Helpers\FormatMoney;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Field;
 
 class ProductSelector extends Field
 {
     protected string $view = 'filament.fields.product-selector';
-
-/*     protected ?array $products = null; */
-
-/*     public function getProducts(): array
-    {
-        if ($this->products !== null) {
-            return $this->products;
-        }
-
-        $products = Product::with(['media', 'collections'])
-            ->limit(5)
-            ->get()
-            ->map(function (Product $product) {
-                return [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'image_url' => $product->getFirstMediaUrl('featured', 'sm_thumb'),
-                    'collections' => $product->collections->pluck('name')->join(', ')
-                ];
-            })->toArray();
-
-            $this->products = $products;
-        
-        return $this->products;
-    } */
-
-/*     public function getProducts(): array
-    {
-        return Product::with(['media'])
-            ->limit(50)
-            ->get()
-            ->map(function (Product $product) {
-                return [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'image_url' => $product->getFirstMediaUrl('featured', 'sm_thumb')
-                ];
-            })
-            ->toArray();
-    } */
 
     protected function setUp(): void
     {
@@ -72,17 +33,35 @@ class ProductSelector extends Field
 
     public function getProducts(): array
     {
-        return Product::with(['media'])
-            ->whereHas('media') // productos con imágenes
+        return Product::with(['media', 'variants']) // Asegúrate de cargar la relación
+            ->whereHas('media')
             ->limit(100)
             ->get()
             ->map(function (Product $product) {
+                $product->updateStockStatus();
+                
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'image_url' => $product->getFirstMediaUrl('featured', 'sm_thumb')
+                    'image_url' => $product->getFirstMediaUrl('featured', 'sm_thumb'),
+                    'price' => FormatMoney::format($product->price),
+                    'total_stock' => $product->total_stock,
+                    'has_variants' => $product->has_variants,
+                    'variants_count' => $product->variants->count(), // Nuevo campo
+                    'stock_status' => $product->stock_status,
+                    'stock_status_class' => $this->getStockStatusClass($product->stock_status),
                 ];
             })
             ->toArray();
+    }
+
+    protected function getStockStatusClass(string $status): string
+    {
+        return match($status) {
+            'in_stock' => 'text-green-500',
+            'low_stock' => 'text-yellow-500',
+            'sold_out' => 'text-red-500',
+            default => 'text-gray-500',
+        };
     }
 }

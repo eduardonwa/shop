@@ -1,38 +1,3 @@
-{{-- <div>
-    <p style="margin-bottom: 20px;">Seleccionar Productos</p>
-    
-    @php
-        $products = $getProducts();
-        $productsCount = count($products);
-    @endphp
-
-    @if($productsCount > 0)
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
-            @foreach($products as $product)
-                <div style="border: 1px solid #eee; padding: 10px; border-radius: 4px;">
-                    @if($product['image_url'])
-                        <img 
-                            src="{{ $product['image_url'] }}" 
-                            alt="{{ $product['name'] }}"
-                            style="width: 100%; height: 150px; object-fit: cover; margin-bottom: 8px;"
-                        >
-                    @else
-                        <div style="width: 100%; height: 150px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-                            <span style="color: #999;">Sin imagen</span>
-                        </div>
-                    @endif
-                    
-                    <h3 style="font-weight: bold; margin-bottom: 4px;">{{ $product['name'] }}</h3>
-                </div>
-            @endforeach
-        </div>
-    @else
-        <div style="padding: 20px; background: #fff8e1; border: 1px solid #ffe0b2; border-radius: 4px;">
-            No se encontraron productos disponibles.
-        </div>
-    @endif
-</div> --}}
-
 <div 
     x-data="{
         selectedProducts: @js($getState() ?? []),
@@ -61,7 +26,7 @@
         type="text" 
         x-model="search" 
         placeholder="Buscar productos..."
-        style="width: 100%; margin-bottom: 1rem; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;"
+        style="width: 100%; margin-bottom: 1rem; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; color: black;"
     >
 
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;">
@@ -74,6 +39,7 @@
                 }"
                 style="padding: 0.5rem; border-radius: 4px; transition: all 0.2s;"
             >
+                <!-- imagen -->
                 <div style="height: 120px; overflow: hidden; margin-bottom: 0.5rem;">
                     <img 
                         x-show="product.image_url" 
@@ -88,7 +54,27 @@
                         <span style="color: #9ca3af;">Sin imagen</span>
                     </div>
                 </div>
+                <!-- info -->
                 <div style="font-weight: 500;" x-text="product.name"></div>
+                <div style="font-weight: 500;" x-text="product.price"></div>
+
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                    <span style="font-size: 0.75rem;">Inventario total:</span>
+                    <span style="font-size: 0.75rem;" x-text="product.total_stock"></span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                    <span style="font-size: 0.75rem;">Estado:</span>
+                    <span style="font-size: 0.75rem;" :class="product.stock_status_class">
+                        <span x-text="product.stock_status === 'in_stock' ? 'Disponible' 
+                                   : product.stock_status === 'low_stock' ? 'Bajo stock' 
+                                   : 'Agotado'"></span>
+                        <span x-show="product.has_variants" style="margin-left: 0.25rem;">
+                            (<span x-text="product.variants_count"></span> variantes)
+                        </span>
+                    </span>
+                </div>
+
                 <div style="font-size: 0.75rem; color: #6b7280;">
                     <span x-show="selectedProducts.includes(product.id)" style="color: #3b82f6;">✓ Seleccionado</span>
                 </div>
