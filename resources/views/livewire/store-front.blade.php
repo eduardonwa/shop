@@ -1,7 +1,7 @@
 <div class="mt-12">
 
     <div class="flex justify-between">
-        <h1 class="text-xl font-medium">Our Products</h1>
+        <h1 class="text-xl font-medium uppercase">Our Products</h1>
         <div>
             <x-input wire:model.live.debounce="searchQuery" type="text" placeholder="Escribe algo"/>
         </div>
