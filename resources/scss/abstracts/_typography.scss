@@ -1,8 +1,14 @@
-$-ff-sans: system-ui, sans-serif;
-$-ff-serif: serif;
+$-ff-sans: 'Satoshi-Regular', sans-serif;
+$-ff-sans-medium: 'Satoshi-Medium', sans-serif;
+$-ff-sans-bold: 'Satoshi-Bold', sans-serif;
+$-ff-sans-light: 'Satoshi-Light', sans-serif;
+$-ff-sans-wordmark: 'Nunito Bold', sans-serif;
 
 $font-family-base: $-ff-sans;
-$font-family-accent: $-ff-sans;
+$font-family-medium: $-ff-sans-medium;
+$font-family-bold: $-ff-sans-bold;
+$font-family-light: $-ff-sans-light;
+$font-family-wordmark: $-ff-sans-wordmark;
 
 $font-sizes: (
   "small": (

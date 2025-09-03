@@ -1,28 +1,41 @@
 @font-face {
-  font-family: "Alegreya SC";
+  font-family: 'Nunito Bold';
+  src:
+    url('/public/fonts/Nunito-Bold.woff2') format('woff2'),
+    url('/public/fonts/Nunito-Bold.woff') format('woff');
   font-weight: 700;
   font-display: swap;
-  src: url("/fonts/alegreyasc-bold-webfont.woff2") format("woff2"),
-    url("/fonts/alegreyasc-bold-webfont.woff") format("woff");
+  font-style: normal;
 }
 @font-face {
-  font-family: "Source Sans Pro";
+  font-family: 'Satoshi-Light';
+  src: url('/public/fonts/Satoshi-Light.woff2') format('woff2'),
+       url('/public/fonts/Satoshi-Light.woff') format('woff');
+  font-weight: 300;
+  font-display: swap;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Satoshi-Regular';
+  src: url('/public/fonts/Satoshi-Regular.woff2') format('woff2'),
+       url('/public/fonts/Satoshi-Regular.woff') format('woff');
   font-weight: 400;
   font-display: swap;
-  src: url("/fonts/sourcesanspro-regular-webfont.woff2") format("woff2"),
-    url("/fonts/sourcesanspro-regular-webfont.woff") format("woff");
+  font-style: normal;
 }
 @font-face {
-  font-family: "Source Sans Pro";
+  font-family: 'Satoshi-Medium';
+  src: url('/public/fonts/Satoshi-Medium.woff2') format('woff2'),
+       url('/public/fonts/Satoshi-Medium.woff') format('woff');
   font-weight: 500;
   font-display: swap;
-  src: url("/fonts/sourcesanspro-semibold-webfont.woff2") format("woff2"),
-    url("/fonts/sourcesanspro-semibold-webfont.woff") format("woff");
+  font-style: normal;
 }
 @font-face {
-  font-family: "Source Sans Pro";
+  font-family: 'Satoshi-Bold';
+  src: url('/public/fonts/Satoshi-Bold.woff2') format('woff2'),
+       url('/public/fonts/Satoshi-Bold.woff') format('woff');
   font-weight: 700;
   font-display: swap;
-  src: url("/fonts/sourcesanspro-bold-webfont.woff2") format("woff2"),
-    url("/fonts/sourcesanspro-bold-webfont.woff") format("woff");
+  font-style: normal;
 }

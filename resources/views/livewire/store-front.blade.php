@@ -1,14 +1,13 @@
 <div class="mt-12">
-
     <div class="flex justify-between">
-        <h1 class="text-xl font-medium uppercase">Our Products</h1>
+        <h1 class="text-xl ff-base uppercase">Our Products</h1>
         <div>
             <x-input wire:model.live.debounce="searchQuery" type="text" placeholder="Escribe algo"/>
         </div>
     </div>
 
     <div class="grid grid-cols-4 gap-4 mt-12">
-        {{-- <p>{{ now()->isoFormat('DD MMMM YYYY') }}</p> --}}
+        <p>{{ now()->isoFormat('DD MMMM YYYY') }}</p>
         @foreach ($this->products as $product)
             @if ($product->published)
                 <x-order-panel class="relative">
