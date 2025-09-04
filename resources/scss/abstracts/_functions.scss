@@ -5,8 +5,8 @@
 
 @function clr($color, $shade, $scheme: $active-theme) {
   $map: null;
-  @if $scheme == "light" {
-    $map: $light;
+  @if $scheme == "default" {
+    $map: $default;
   } @else if $scheme == "dark" {
     $map: $dark;
   } @else if $scheme == $active-theme {
@@ -28,6 +28,20 @@
   } @else {
     @error '$font-sizes does not have that size!';
   }
+}
+
+@function fs($scale, $step) {
+  @if not map.has-key($font-sizes, $scale) {
+    @error 'fs(): scale "#{$scale}" does not exist in $font-sizes.';
+  }
+
+  $scale-map: map.get($font-sizes, $scale);
+
+  @if not map.has-key($scale-map, $step) {
+    @error 'fs(): step "#{$step}" does not exist in the scale "#{$scale}".';
+  }
+
+  @return map.get($scale-map, $step);
 }
 
 @function size($size) {
