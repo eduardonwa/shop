@@ -26,7 +26,7 @@ return [
     'registered?' => '¿Ya estás registrado?',
     'register' => 'Regístrate',
     'remember' => 'Recuérdame',
-    'log_in' => 'Iniciar sesión',
+    'log_in' => 'Ingresar',
     'log_out' => 'Cerrar sesión',
     'two_factor_invalid' => 'The provided two factor authentication code was invalid.',
 ];
