@@ -11,4 +11,9 @@ class Collection extends Model
     {
         return $this->belongsToMany(Product::class, 'collection_product');
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 }
