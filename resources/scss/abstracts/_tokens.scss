@@ -7,7 +7,7 @@ $enable-media-query-dark-mode: false;
 
 // Contextual
 $color-text-default: $color-neutral-700;
-$color-background-default: $color-primary-100;
+$color-background-default: $color-primary-200;
 $color-text-interactive-default: $color-accent-400;
 $color-text-interactive-hover: $color-accent-500;
 
@@ -70,17 +70,17 @@ $container-max-width-narrow: 40rem;
 $container-max-width-wide: 75rem;
 
 // site header
-$site-header-background-color: $color-primary-300;
+$site-header-background-color: $color-primary-200;
 $site-header-color: $color-neutral-900;
 $site-header-padding: $size-8 0;
 $site-header-margin: 0;
-$site-header-jusitifcation-small-screens: center;
-$site-header-jusitifcation-large-screens: space-between;
+$site-header-jusitification-small-screens: flex-start;
+$site-header-jusitification-large-screens: space-between;
 $site-header-alignment: center;
 
 //navigation
 $navigation-color: $site-header-color;
-$navigation-color-hover: $color-primary-300;
+$navigation-color-hover: $color-primary-600;
 $navigation-font-size: $font-size-400;
 $navigation-gap: $size-9;
 $navigation-link-text-decoration: none;

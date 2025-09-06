@@ -89,5 +89,7 @@ class AppServiceProvider extends ServiceProvider
         EditAction::configureUsing(function ($action) {
             return $action->slideOver();
         });
+
+        Blade::component('components.ui.icon', 'icon');
     }
 }

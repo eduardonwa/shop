@@ -1,0 +1,13 @@
+@use "../abstracts" as *;
+
+.is-hidden {
+    display: none;
+}
+
+.is-inline {
+    display: inline-flex;
+}
+
+.is-block {
+    display: block;
+}

@@ -1,0 +1,6 @@
+@use '../abstracts/' as *;
+
+.brand-logo {
+  font-size: fs("small", "700");
+  color: $color-primary-900;
+}
