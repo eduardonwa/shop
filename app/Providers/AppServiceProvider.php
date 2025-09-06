@@ -5,6 +5,7 @@ namespace App\Providers;
 use Money\Money;
 use App\Models\User;
 use NumberFormatter;
+use App\Models\Collection;
 use Illuminate\Http\Request;
 use Laravel\Cashier\Cashier;
 use Laravel\Fortify\Fortify;
@@ -12,6 +13,7 @@ use App\Factories\CartFactory;
 use Illuminate\Support\Carbon;
 use Money\Currencies\ISOCurrencies;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Blade;
 use Filament\Tables\Actions\EditAction;
 use Illuminate\Database\Eloquent\Model;
@@ -91,5 +93,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::component('components.ui.icon', 'icon');
+
+        View::composer('components.ui.product-collections', function ($view) {
+            $view->with('productCollections', Collection::active()
+                ->select('id', 'name', 'slug')
+                ->get());
+        });
     }
 }
