@@ -90,6 +90,10 @@
                 @endguest
             </div>
         </article>
+        
+        <div class="desktop-collection text-center padding-block-6">
+            <x-ui.product-collections />
+        </div>
     </div>
 
     <!-- Responsive Navigation Menu -->
@@ -133,23 +137,7 @@
                 {{ __('global.home') }}
             </x-responsive-nav-link>
 
-            <nav class="collections">
-                <a href="#">
-                    Diarios
-                </a>
-                <a href="#">
-                    Colores Frescos
-                </a>
-                <a href="#">
-                    Comodidad Moderna
-                </a>
-                <a href="#">
-                    Atemporal
-                </a>
-                <a href="#">
-                    Estilo Versátil
-                </a>
-            </nav>
+            <x-ui.product-collections />
 
             @auth
                 <article class="mobile-menu__auth">
@@ -168,12 +156,28 @@
             @endauth
 
             <footer class="mobile-menu__footer">
-                <a href="#" class="uppercase ff-bold">
-                    acerca
-                </a>
-                <a href="#" class="uppercase ff-bold">
-                    contacto
-                </a>
+                <div class="links">
+                    <a href="#" class="uppercase ff-bold">
+                        acerca
+                    </a>
+                    <a href="#" class="uppercase ff-bold">
+                        contacto
+                    </a>
+                </div>
+
+                <div class="icons">
+                    <x-icon href="https://facebook.com" label="Facebook">
+                        <x-ui.icons.socials.facebook />
+                    </x-icon>
+                    
+                    <x-icon href="https://instagram.com" label="Instagram">
+                        <x-ui.icons.socials.instagram />
+                    </x-icon>
+
+                    <x-icon href="https://youtube.com" label="YouTube">
+                        <x-ui.icons.socials.youtube />
+                    </x-icon>
+                </div>
             </footer>
         </div>
     </div>
